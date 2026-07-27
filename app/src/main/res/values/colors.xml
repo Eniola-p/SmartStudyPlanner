@@ -1,0 +1,21 @@
+<resources>
+
+    <!-- Brand Colors -->
+    <color name="primary">#1E88E5</color>
+    <color name="accent">#3CBF5A</color>
+
+    <!-- Background -->
+    <color name="background">#FFFFFF</color>
+    <color name="card_background">#F7F9FC</color>
+    <color name="divider">#E5E7EB</color>
+
+    <!-- Text -->
+    <color name="primary_text">#0D2B5B</color>
+    <color name="secondary_text">#555555</color>
+    <color name="hint_text">#8A8A8A</color>
+
+    <!-- Buttons -->
+    <color name="button_text">#FFFFFF</color>
+
+
+</resources>
