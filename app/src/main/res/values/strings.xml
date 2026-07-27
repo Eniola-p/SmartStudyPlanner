@@ -20,26 +20,17 @@
     <string name="dont_have_account">Don\'t have an account?</string>
     <string name="sign_up">Sign Up</string>
 
-    <!-- ========================================================= -->
     <!-- Sign Up Screen -->
-    <!-- ========================================================= -->
-
     <string name="create_account">Create Account</string>
     <string name="signup_subtitle">Create your account to start planning better.</string>
     <string name="enter_full_name">Enter your full name</string>
     <string name="confirm_password">Confirm your password</string>
     <string name="already_have_account">Already have an account?</string>
 
-    <!-- ========================================================= -->
     <!-- Home Dashboard -->
-    <!-- ========================================================= -->
-
     <string name="placeholder_greeting">Good Morning, User</string>
-
     <string name="today_study_tasks">Today\'s Study Tasks</string>
-
     <string name="quick_actions">Quick Actions</string>
-
     <string name="view_all_tasks">View All →</string>
 
     <!-- Temporary placeholder study tasks -->
