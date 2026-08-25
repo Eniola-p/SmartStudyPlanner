@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application
+        android:name=".SmartStudyPlannerApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -30,14 +33,33 @@
             android:name=".MainActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
+        <!-- Login Activity -->
         <activity
             android:name=".LoginActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
+        <!-- SignUp Activity -->
         <activity
             android:name=".SignUpActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
+        <!-- AddTask Activity -->
+        <activity
+            android:name=".AddTaskActivity"
+            android:exported="false"/>
+
+        <!-- Receiving Notifications -->
+        <receiver
+            android:name=".receivers.ReminderReceiver"
+            android:exported="false" />
+
+        <!-- Editing Tasks -->
+        <activity
+            android:name=".EditTaskActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

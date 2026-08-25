@@ -13,4 +13,22 @@
 
     </style>
 
+    <!-- Blue calendar and clock dialogs -->
+    <style name="BlueDateTimePicker" parent="Theme.Material3.Light.Dialog.Alert">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorSecondary">@color/primary</item>
+        <item name="android:textColorPrimary">@color/primary</item>
+    </style>
+
+    <!-- Blue filter dropdown -->
+    <style
+        name="Widget.SmartStudyPlanner.FilterDropdown"
+        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+        <item name="boxStrokeColor">@color/primary</item>
+        <item name="hintTextColor">@color/primary</item>
+        <item name="colorControlNormal">@color/primary</item>
+        <item name="colorControlActivated">@color/primary</item>
+
+    </style>
 </resources>

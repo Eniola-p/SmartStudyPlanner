@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Home Dashboard - Today's Study Tasks Card -->
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cardTodayTasks"
+    style="@style/Widget.SmartStudyPlanner.DashboardCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/margin_large">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_large">
+
+        <!-- Card Title -->
+        <TextView
+            android:id="@+id/txtTodayTasksTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/today_study_tasks"
+            android:textColor="@color/primary_text"
+            android:textSize="@dimen/text_heading"
+            android:fontFamily="@font/poppins_semibold" />
+
+        <!-- Dynamic Today's Tasks -->
+        <LinearLayout
+            android:id="@+id/layoutTodayTasks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:orientation="vertical" />
+
+        <!-- Today's Task Message -->
+        <TextView
+            android:id="@+id/txtTodayTasksMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:textColor="@color/secondary_text"
+            android:textSize="@dimen/text_small"
+            android:fontFamily="@font/poppins_regular" />
+
+        <!-- View All Tasks -->
+        <TextView
+            android:id="@+id/txtViewAllTasks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_large"
+            android:text="@string/view_all_tasks"
+            android:textColor="@color/primary_dark"
+            android:textSize="@dimen/text_small"
+            android:fontFamily="@font/poppins_medium" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

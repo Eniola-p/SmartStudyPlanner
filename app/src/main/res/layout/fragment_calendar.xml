@@ -1,13 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CalendarFragment">
+    android:background="@color/background">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/calendar" />
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-</FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Screen Title -->
+            <TextView
+                android:id="@+id/txtCalendarTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/calendar"
+                android:textColor="@color/primary_text"
+                android:textSize="28sp"
+                android:fontFamily="@font/poppins_bold"/>
+
+            <!-- Screen Subtitle -->
+            <TextView
+                android:id="@+id/txtCalendarSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/calendar_subtitle"
+                android:textColor="@color/secondary_text"
+                android:textSize="16sp"
+                android:fontFamily="@font/poppins_regular"/>
+
+            <!-- Calendar Header -->
+            <include
+                android:id="@+id/includeCalendarHeader"
+                layout="@layout/calendar_header"/>
+
+            <!-- Calendar Grid -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerCalendar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"/>
+
+            <!-- Selected Date Card -->
+            <include
+                android:id="@+id/includeSelectedDate"
+                layout="@layout/calendar_selected_date"/>
+
+        </LinearLayout>
+
+
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

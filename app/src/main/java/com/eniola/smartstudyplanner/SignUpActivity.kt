@@ -13,7 +13,7 @@ class SignUpActivity : AppCompatActivity() {
 
     // Firebase Authentication instance used to create and manage user accounts.
     private lateinit var auth: FirebaseAuth
-
+    private val userRepository = UserRepository()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
@@ -101,24 +101,54 @@ class SignUpActivity : AppCompatActivity() {
                 .addOnCompleteListener(this) { task ->
 
                     if (task.isSuccessful) {
+                        val firebaseUser = auth.currentUser
 
-                        Toast.makeText(
-                            this,
-                            "Account created successfully!",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        val profileUpdates =
+                            com.google.firebase.auth.UserProfileChangeRequest.Builder()
+                                .setDisplayName(fullName)
+                                .build()
 
-                        startActivity(Intent(this, LoginActivity::class.java))
-                        finish()
+                        firebaseUser?.updateProfile(profileUpdates)
 
+                        userRepository.saveUserProfile(
+                            fullName = fullName,
+                            email = email,
+
+                            onSuccess = {
+
+                                Toast.makeText(
+                                    this,
+                                    "Account created successfully!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+
+                                startActivity(
+                                    Intent(
+                                        this,
+                                        LoginActivity::class.java
+                                    )
+                                )
+
+                                finish()
+                            },
+
+                            onError = { exception ->
+
+                                Toast.makeText(
+                                    this,
+                                    "Account created, but profile could not be saved: ${exception.message}",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        )
                     } else {
 
                         Toast.makeText(
                             this,
-                            task.exception?.localizedMessage ?: "Registration failed",
+                            task.exception?.localizedMessage
+                                ?: "Registration failed",
                             Toast.LENGTH_LONG
                         ).show()
-
                     }
                 }
         }

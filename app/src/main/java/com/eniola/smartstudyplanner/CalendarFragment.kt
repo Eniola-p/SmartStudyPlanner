@@ -1,59 +1,118 @@
 package com.eniola.smartstudyplanner
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import com.eniola.smartstudyplanner.adapter.CalendarAdapter
+import com.eniola.smartstudyplanner.databinding.FragmentCalendarBinding
+import com.eniola.smartstudyplanner.utils.CalendarUtils
+import java.time.LocalDate
+import java.time.Month
+import java.time.format.TextStyle
+import java.util.Locale
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [CalendarFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+/** CalendarFragment displays the monthly calendar.*/
 class CalendarFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private var _binding: FragmentCalendarBinding? = null
+    private val binding get() = _binding!!
+
+    // Keeps track of the month currently being displayed
+    private var currentMonth = LocalDate.now().monthValue
+
+    // Keeps track of the year currently being displayed
+    private var currentYear = LocalDate.now().year
+
+    // Stores the currently selected date.
+    private var selectedDate: LocalDate? = LocalDate.now()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+
+        _binding = FragmentCalendarBinding.inflate(inflater, container, false)
+        setupCalendar()
+        setupMonthNavigation()
+        return binding.root
+    }
+
+    /**Displays the current month's calendar.*/
+    private fun setupCalendar() {
+        val calendarDays = CalendarUtils.generateMonth(
+            currentYear,
+            currentMonth
+        )
+
+        binding.recyclerCalendar.layoutManager =
+            GridLayoutManager(requireContext(), 7)
+
+        val adapter = CalendarAdapter(calendarDays)
+        binding.recyclerCalendar.adapter = adapter
+        adapter.onDateClick = { calendarDay ->
+            selectedDate = calendarDay.date
+            updateSelectedDateCard()
+        }
+
+        updateMonthTitle()
+        updateSelectedDateCard()
+    }
+    /** Updates the selected date card.*/
+    private fun updateSelectedDateCard() {
+
+        if (selectedDate == null) {
+            binding.includeSelectedDate.txtSelectedDate.text =
+                getString(R.string.no_date_selected)
+            binding.includeSelectedDate.txtSelectedDateTasks.text =
+                getString(R.string.no_tasks_for_selected_date)
+            return
+        }
+
+        binding.includeSelectedDate.txtSelectedDate.text =
+            selectedDate.toString()
+
+        binding.includeSelectedDate.txtSelectedDateTasks.text =
+            getString(R.string.no_tasks_for_selected_date)
+
+    }
+
+    /** Updates the month title shown in the calendar header.*/
+    private fun updateMonthTitle() {
+
+        val monthName = Month.of(currentMonth)
+            .getDisplayName(TextStyle.FULL, Locale.getDefault())
+
+        binding.includeCalendarHeader.txtCurrentMonth.text =
+            "$monthName $currentYear"
+
+    }
+    /** Handles previous and next month navigation.*/
+    private fun setupMonthNavigation() {
+        binding.includeCalendarHeader.btnPreviousMonth.setOnClickListener {
+            currentMonth--
+            if (currentMonth < 1) {
+                currentMonth = 12
+                currentYear--
+            }
+
+            setupCalendar()
+        }
+        binding.includeCalendarHeader.btnNextMonth.setOnClickListener {
+            currentMonth++
+            if (currentMonth > 12) {
+                currentMonth = 1
+                currentYear++
+            }
+            setupCalendar()
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_calendar, container, false)
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment CalendarFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            CalendarFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

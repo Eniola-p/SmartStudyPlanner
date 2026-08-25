@@ -6,6 +6,7 @@
 
     <!-- Background -->
     <color name="background">#FFFFFF</color>
+    <color name="background_general">#F8F9FD</color>
     <color name="card_background">#F7F9FC</color>
     <color name="divider">#E5E7EB</color>
 
@@ -13,9 +14,20 @@
     <color name="primary_text">#0D2B5B</color>
     <color name="secondary_text">#555555</color>
     <color name="hint_text">#8A8A8A</color>
+    <color name="primary_dark">#1565C0</color>
 
     <!-- Buttons -->
     <color name="button_text">#FFFFFF</color>
+
+    <!-- Priority -->
+    <color name="priority_none">#FFFFFF</color>
+    <color name="priority_red">#F44336</color>
+    <color name="priority_orange">#FF9800</color>
+    <color name="priority_yellow">#FFC107</color>
+    <color name="priority_green">#4CAF50</color>
+    <color name="error">#D32F2F</color>
+
+    <color name="success">#4CAF50</color>
 
 
 </resources>

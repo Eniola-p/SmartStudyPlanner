@@ -1,16 +1,10 @@
 <resources>
 
-    <!-- ========================================================= -->
     <!-- App -->
-    <!-- ========================================================= -->
-
     <string name="app_name">Smart Study Planner</string>
     <string name="splash_logo_description">Smart Study Planner Logo</string>
 
-    <!-- ========================================================= -->
     <!-- Login Screen -->
-    <!-- ========================================================= -->
-
     <string name="welcome_back">Welcome Back</string>
     <string name="subtitle_text">Plan smarter. Achieve more.</string>
     <string name="enter_email">Enter your email address</string>
@@ -28,40 +22,139 @@
     <string name="already_have_account">Already have an account?</string>
 
     <!-- Home Dashboard -->
-    <string name="placeholder_greeting">Good Morning, User</string>
+    <string name="placeholder_date">Date</string>
     <string name="today_study_tasks">Today\'s Study Tasks</string>
     <string name="quick_actions">Quick Actions</string>
     <string name="view_all_tasks">View All →</string>
+    <string name="add_task">Add Task</string>
+    <string name="courses">Courses</string>
+    <string name="reminders">Reminders</string>
+    <string name="deadline_date_time">%1$s - %2$s</string>
 
-    <!-- Temporary placeholder study tasks -->
-    <string name="placeholder_task_one">✔ Mobile Computing</string>
-    <string name="placeholder_task_two">✔ Artificial Intelligence</string>
-    <string name="placeholder_task_three">✔ Final Year Project</string>
+    <!-- Today's Study Tasks -->
+    <string name="no_study_tasks_today">No study tasks for today. Plan ahead or enjoy your free time. 😊</string>
+    <string name="tasks_remaining_today">Keep going! You still have %1$d tasks to complete today.</string>
+    <string name="unable_to_load_today_tasks">Unable to load today\'s study tasks.</string>
+    <string name="complete_task">Mark task as completed</string>
+    <string name="tasks_completed_today">Great progress! %1$d of %2$d tasks completed.</string>
+    <string name="all_tasks_completed_today">🎉 Amazing work! You\'ve completed all your study tasks for today!</string>
+    <string name="missed_tasks_today">You have %1$d missed task(s). Don\'t worry — let\'s get back on track.</string>
+    <string name="today_task_details">%1$s • %2$s</string>
 
-    <!-- Temporary placeholder date -->
-    <string name="placeholder_date">Wednesday, 23 July 2026</string>
-
-    <!-- Upcoming Deadlines (Temporary Placeholders) -->
+    <!-- Upcoming Deadlines -->
     <string name="upcoming_deadlines">Upcoming Deadlines</string>
-    <string name="placeholder_deadline_one">Project Proposal</string>
-    <string name="placeholder_deadline_date_one">Tomorrow</string>
-    <string name="placeholder_deadline_two">Artificial Intelligence Assignment</string>
-    <string name="placeholder_deadline_date_two">Friday</string>
     <string name="view_all_deadlines">View All →</string>
 
     <!-- Study Progress -->
-
     <string name="study_progress">Study Progress</string>
     <string name="weekly_goal">Weekly Goal</string>
-    <string name="placeholder_progress">40%%</string>
+    <string name="placeholder_progress">40%</string>
     <string name="view_statistics">View Statistics →</string>
     <string name="progress_summary">Progress Summary →</string>
 
-    <!-- Fragments-->
-    <string name="calendar"> Calendar</string>
+    <!-- Fragments -->
+    <string name="home">Home</string>
+    <string name="calendar">Calendar</string>
     <string name="profile">Profile</string>
-    <string name="task"> Task</string>
+    <string name="tasks">Tasks</string>
 
+    <!-- Calendar -->
+    <string name="previous_month">Previous Month</string>
+    <string name="next_month">Next Month</string>
+    <string name="placeholder_month">August 2026</string>
+    <string name="calendar_subtitle">Manage your study schedule</string>
+    <string name="selected_date">Selected Date</string>
+    <string name="placeholder_selected_date">Saturday, August 1, 2026</string>
+    <string name="tasks_for_day">Tasks for this day</string>
+    <string name="placeholder_calendar_task">• No study tasks scheduled.</string>
+    <string name="tasks_for_selected_date">Tasks</string>
+    <string name="no_date_selected">Select a date from the calendar</string>
+    <string name="no_tasks_for_selected_date">No study tasks scheduled.</string>
+
+    <!-- Add Task -->
+    <string name="task_title">Task Title</string>
+    <string name="course">Course</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="priority">Priority</string>
+    <string name="save_task">Save Task</string>
+    <string name="importance_question">How important is this task?</string>
+    <string name="urgency_question">When does it need to be done?</string>
+    <string name="priority_normal">Priority: Normal</string>
+    <string name="description">Description of task</string>
+    <string name="priority_format">%1$s</string>
+    <string name="priority_none">Priority: No Priority</string>
+    <string name="filter_tasks">Filter Tasks</string>
+    <string name="task_title_required">Please enter a task title</string>
+
+    <!-- Task Fragment -->
+    <string name="no_tasks">You don\'t have any tasks yet.</string>
+    <string name="unable_to_load_tasks">Unable to load your tasks.</string>
+    <string name="my_tasks">My Tasks</string>
+    <string name="search_tasks">Search tasks</string>
+    <string name="todays_progress">Today\'s Progress</string>
+    <string name="today">Today</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="completed">Completed</string>
+    <string name="missed">Missed</string>
+    <string name="tasks_progress_format">%1$d of %2$d tasks completed</string>
+    <string name="percentage_format">%1$d%%</string>
+    <string name="no_upcoming_tasks">No upcoming tasks.</string>
+    <string name="no_completed_tasks">No completed tasks yet.</string>
+    <string name="no_missed_tasks">You have no missed tasks. Great job!</string>
+    <string name="reschedule">Reschedule</string>
+    <string name="missed_task">Missed</string>
+    <string name="due_today">Due today</string>
+    <string name="due_tomorrow">Due tomorrow</string>
+    <string name="due_in_hours">Due in %1$d hours</string>
+    <string name="due_in_days">Due in %1$d days</string>
+    <string name="due_in_week">Due in 1 week</string>
+    <string name="due_in_weeks">Due in %1$d weeks</string>
+    <string name="due_in_month">Due in 1 month</string>
+    <string name="due_in_months">Due in %1$d months</string>
+
+    <!-- Task Filter Fragment -->
+    <string name="back">Back</string>
+    <string name="choose">Choose how you want to organize your tasks</string>
+    <string name="all_courses">All Courses</string>
+    <string name="all_priority">All Priority</string>
+    <string name="status">Status</string>
+    <string name="all_statuses">All Statuses</string>
+    <string name="reset">Reset</string>
+    <string name="apply_filters">Apply Filters</string>
+
+    <!-- Filtered tasks -->
+    <string name="find_tasks"> Find Tasks </string>
+
+    <!-- Greeting -->
+    <string name="greeting_format">%1$s, %2$s!</string>
+
+    <!-- Upcoming Deadlines -->
+    <string name="no_upcoming_deadlines">No upcoming deadlines this week.</string>
+    <string name="failed_to_load_deadlines">Unable to load upcoming deadlines.</string>
+
+    <!-- Importance options -->
+    <string name="very_important">Very Important</string>
+    <string name="important">Important</string>
+    <string name="less_important">Less Important</string>
+
+    <!-- Urgency options -->
+    <string name="do_soon">Do Soon</string>
+    <string name="can_wait">Can Wait</string>
+    <string name="no_rush">No Rush</string>
+
+    <!-- Reminder options -->
+    <string name="no_reminder">No reminder</string>
+    <string name="five_minutes_before">5 minutes before</string>
+    <string name="fifteen_minutes_before">15 minutes before</string>
+    <string name="thirty_minutes_before">30 minutes before</string>
+    <string name="one_hour_before">1 hour before</string>
+    <string name="one_day_before">1 day before</string>
+
+    <!-- Task Details Screen -->
+    <string name="task_details">Task Details</string>
+    <string name="edit_task">Edit Task </string>
+    <string name="delete_task">Delete Task </string>
 
 
 </resources>

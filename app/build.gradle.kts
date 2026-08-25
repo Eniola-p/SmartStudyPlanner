@@ -21,6 +21,9 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures {
+        viewBinding = true
+    }
     buildTypes {
         release {
             optimization {
@@ -38,8 +41,9 @@ dependencies {
     // Firebase setup:
 // Added the Firebase Bill of Materials (BoM) to manage compatible Firebase library versions
 // and included the Firebase Authentication SDK for user sign-up and login functionality.
-    implementation(platform("com.google.firebase:firebase-bom:34.16.0"))
+    implementation(platform("com.google.firebase:firebase-bom:34.17.0"))
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
 
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.appcompat)

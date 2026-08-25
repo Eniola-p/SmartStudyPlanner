@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Home Dashboard - Study Progress Card                      -->
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:id="@+id/cardStudyProgress"
+    style="@style/Widget.SmartStudyPlanner.DashboardCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/margin_large">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_large">
+
+        <!-- Card Title -->
+        <TextView
+            android:id="@+id/txtStudyProgressTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/study_progress"
+            android:textColor="@color/primary_text"
+            android:textSize="@dimen/text_heading"
+            android:fontFamily="@font/poppins_semibold"/>
+
+        <!-- Weekly Goal -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtWeeklyGoal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/weekly_goal"
+                android:textColor="@color/secondary_text"
+                android:textSize="@dimen/text_body"
+                android:fontFamily="@font/poppins_regular"/>
+
+            <TextView
+                android:id="@+id/txtProgressPercent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/placeholder_progress"
+                android:textColor="@color/primary_dark"
+                android:textSize="@dimen/text_body"
+                android:fontFamily="@font/poppins_semibold"/>
+        </LinearLayout>
+
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progressStudy"
+
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_marginTop="@dimen/margin_small"
+            android:max="100"
+            android:progress="40"
+            android:progressDrawable="@drawable/progress_bar"/>
+
+        <!-- Progress Summary -->
+        <TextView
+            android:id="@+id/txtProgressSummary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:text="@string/progress_summary"
+            android:textColor="@color/secondary_text"
+            android:textSize="@dimen/text_small"
+            android:fontFamily="@font/poppins_regular"/>
+
+        <!-- View Statistics -->
+        <TextView
+            android:id="@+id/txtViewStatistics"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_large"
+            android:text="@string/view_statistics"
+            android:textColor="@color/primary_dark"
+            android:textSize="@dimen/text_small"
+            android:fontFamily="@font/poppins_medium"/>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

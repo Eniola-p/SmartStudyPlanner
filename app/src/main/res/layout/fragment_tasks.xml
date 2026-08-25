@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background"
+    android:padding="20dp">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- Title and date -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtTasksTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/my_tasks"
+                android:textColor="@color/primary_text"
+                android:textSize="28sp"
+                android:fontFamily="@font/poppins_bold" />
+
+            <TextView
+                android:id="@+id/txtTasksDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/secondary_text"
+                android:textSize="14sp"
+                android:fontFamily="@font/poppins_regular" />
+
+        </LinearLayout>
+
+        <!-- Search and filter icons -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Search -->
+            <ImageView
+                android:id="@+id/imgSearchTasks"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_search"
+                android:contentDescription="@string/search_tasks"
+                android:padding="6dp"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <!-- Filter -->
+            <ImageView
+                android:id="@+id/imgFilterTasks"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
+                android:src="@drawable/ic_filter"
+                android:contentDescription="@string/filter_tasks"
+                android:padding="6dp"
+                android:clickable="true"
+                android:focusable="true" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Today's Progress -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardTaskProgress"
+        style="@style/Widget.SmartStudyPlanner.DashboardCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/todays_progress"
+                        android:textColor="@color/primary_text"
+                        android:textSize="16sp"
+                        android:fontFamily="@font/poppins_semibold" />
+
+                    <TextView
+                        android:id="@+id/txtTaskProgress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/poppins_regular" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/txtTaskProgressPercentage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0%"
+                    android:textColor="@color/primary_dark"
+                    android:textSize="20sp"
+                    android:fontFamily="@font/poppins_semibold" />
+
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/progressTodayTasks"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginTop="12dp"
+                android:max="100"
+                android:progress="0" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Quick Filters -->
+    <HorizontalScrollView
+        android:id="@+id/taskFilterScroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/taskFilterContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFilterToday"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/today"
+                android:textAllCaps="false" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFilterUpcoming"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/upcoming"
+                android:textAllCaps="false" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFilterCompleted"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/completed"
+                android:textAllCaps="false" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFilterMissed"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/missed"
+                android:textAllCaps="false" />
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <!-- Task List -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/tasksScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="8dp"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/layoutAllTasks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="20dp" />
+
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

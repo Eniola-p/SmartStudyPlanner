@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Displays the selected date and all tasks for that date.     -->
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cardSelectedDate"
+    style="@style/Widget.SmartStudyPlanner.DashboardCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- Section Title -->
+        <TextView
+            android:id="@+id/txtSelectedDateTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tasks_for_selected_date"
+            android:textColor="@color/primary_text"
+            android:textSize="18sp"
+            android:fontFamily="@font/poppins_semibold"/>
+
+        <!-- Current Selected Date -->
+        <TextView
+            android:id="@+id/txtSelectedDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/no_date_selected"
+            android:textColor="@color/secondary_text"
+            android:textSize="15sp"
+            android:fontFamily="@font/poppins_regular"/>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@color/divider"/>
+
+        <!-- Tasks Heading -->
+        <TextView
+            android:id="@+id/txtTasksHeading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tasks_for_day"
+            android:textColor="@color/primary_text"
+            android:textSize="16sp"
+            android:fontFamily="@font/poppins_medium"/>
+
+        <!-- Placeholder Task -->
+        <TextView
+            android:id="@+id/txtSelectedDateTasks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/no_tasks_for_selected_date"
+            android:textColor="@color/secondary_text"
+            android:textSize="15sp"
+            android:fontFamily="@font/poppins_regular"/>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

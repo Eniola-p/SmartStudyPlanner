@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Home Dashboard - Quick Actions Card                       -->
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:id="@+id/cardQuickActions"
+    style="@style/Widget.SmartStudyPlanner.DashboardCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/margin_large">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_large">
+
+        <!-- Card Title -->
+        <TextView
+            android:id="@+id/txtQuickActionsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/quick_actions"
+            android:textColor="@color/primary_text"
+            android:textSize="@dimen/text_heading"
+            android:fontFamily="@font/poppins_semibold" />
+
+        <!-- First Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            android:orientation="horizontal">
+
+            <include
+                android:id="@+id/includeAddTask"
+                layout="@layout/home_item_add_task" />
+
+            <Space
+                android:layout_width="@dimen/margin_small"
+                android:layout_height="wrap_content"/>
+
+            <include
+                android:id="@+id/includeCalendar"
+                layout="@layout/home_item_calendar" />
+
+        </LinearLayout>
+
+        <!-- Second Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:orientation="horizontal">
+
+            <include
+                android:id="@+id/includeCourses"
+                layout="@layout/home_item_courses" />
+
+            <Space
+                android:layout_width="@dimen/margin_small"
+                android:layout_height="wrap_content"/>
+
+            <include
+                android:id="@+id/includeReminders"
+                layout="@layout/home_item_reminders" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

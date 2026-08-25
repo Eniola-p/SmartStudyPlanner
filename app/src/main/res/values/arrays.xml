@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <!-- Importance -->
+    <string-array name="importance_options">
+        <item>Select importance</item>
+        <item>@string/very_important</item>
+        <item>@string/important</item>
+        <item>@string/less_important</item>
+    </string-array>
+
+    <!-- Urgency -->
+    <string-array name="urgency_options">
+        <item>Select urgency</item>
+        <item>@string/do_soon</item>
+        <item>@string/can_wait</item>
+        <item>@string/no_rush</item>
+    </string-array>
+
+    <!-- Reminder -->
+    <string-array name="reminder_options">
+        <item>@string/no_reminder</item>
+        <item>@string/five_minutes_before</item>
+        <item>@string/fifteen_minutes_before</item>
+        <item>@string/thirty_minutes_before</item>
+        <item>@string/one_hour_before</item>
+        <item>@string/one_day_before</item>
+    </string-array>
+
+</resources>

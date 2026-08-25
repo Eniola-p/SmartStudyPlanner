@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background"
+    android:padding="20dp">
+
+    <!-- Header -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/imgBackFilter"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_arrow_back"
+            android:contentDescription="@string/back" />
+
+        <TextView
+            android:id="@+id/txtFilterTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="@string/filter_tasks"
+            android:textColor="@color/primary_text"
+            android:textSize="24sp"
+            android:fontFamily="@font/poppins_bold" />
+
+    </LinearLayout>
+
+
+    <!-- Filter description -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/choose"
+        android:textColor="@color/secondary_text"
+        android:textSize="14sp"
+        android:fontFamily="@font/poppins_regular" />
+
+
+    <!-- Course -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layoutFilterCourse"
+        style="@style/Widget.SmartStudyPlanner.FilterDropdown"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:hint="@string/course"
+        app:boxStrokeColor="@color/primary_dark">
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/dropdownFilterCourse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            android:text="@string/all_courses"
+            app:boxStrokeColor="@color/card_background"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <!-- Priority -->
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layoutFilterPriority"
+        style="@style/Widget.SmartStudyPlanner.FilterDropdown"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="@string/priority"
+        app:boxStrokeColor="@color/primary_dark">
+
+        <!-- Priority dropdown. -->
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/dropdownFilterPriority"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            android:text="@string/all_priority"
+            app:boxStrokeColor="@color/card_background"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Status -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layoutFilterStatus"
+        style="@style/Widget.SmartStudyPlanner.FilterDropdown"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="@string/status"
+        app:boxStrokeColor="@color/primary_dark">
+
+        <!-- Status dropdown. -->
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/dropdownFilterStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            android:text="@string/all_statuses"
+            app:boxStrokeColor="@color/card_background"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <!-- Buttons -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnResetFilters"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/reset"
+            android:textAllCaps="false"
+            app:backgroundTint="@color/background"
+            android:textColor="@color/primary"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnApplyFilters"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:text="@string/apply_filters"
+            android:textAllCaps="false"
+            app:backgroundTint="@color/primary"
+            android:textColor="@color/button_text" />
+    </LinearLayout>
+
+</LinearLayout>
