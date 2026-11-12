@@ -1,7 +1,10 @@
+
 package com.eniola.smartstudyplanner.utils
 
+/** ReminderUtils converts the student's selected reminder option into the number of minutes before a scheduled task.*/
 object ReminderUtils {
 
+    /** Returns the reminder interval in minutes based on the selected position. */
     fun getReminderMinutes(reminderPosition: Int): Int {
 
         return when (reminderPosition) {

@@ -4,10 +4,10 @@ import com.eniola.smartstudyplanner.model.CalendarDay
 import java.time.LocalDate
 import java.time.YearMonth
 
-/**Generates all calendar cells for a month.*/
+//Generates all calendar cells for a month.
 object CalendarUtils {
 
-    /** Generates exactly 42 cells (6 rows × 7 columns).*/
+    //Generates exactly 42 cells (6 rows × 7 columns).
     fun generateMonth(
         year: Int,
         month: Int
@@ -49,6 +49,39 @@ object CalendarUtils {
                 CalendarDay(day = null)
             )
         }
+        return calendarDays
+    }
+
+    // Generates the seven days of the selected week.
+    fun generateWeek(
+        selectedDate: LocalDate
+    ): List<CalendarDay> {
+
+        // Start the week on Monday.
+        val monday =
+            selectedDate.minusDays(
+                (selectedDate.dayOfWeek.value - 1).toLong()
+            )
+
+        val today = LocalDate.now()
+        val calendarDays = mutableListOf<CalendarDay>()
+
+        // Generate Monday to Sunday.
+        for (i in 0..6) {
+
+            val currentDate =
+                monday.plusDays(i.toLong())
+
+            calendarDays.add(
+                CalendarDay(
+                    day = currentDate.dayOfMonth,
+                    date = currentDate,
+                    isToday = currentDate == today,
+                    isSelected = currentDate == selectedDate
+                )
+            )
+        }
+
         return calendarDays
     }
 }

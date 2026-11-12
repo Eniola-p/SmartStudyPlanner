@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- Displays the selected date and all tasks for that date.     -->
+<!-- Displays the selected date and tasks scheduled for that date. -->
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/cardSelectedDate"
@@ -25,7 +25,7 @@
             android:textSize="18sp"
             android:fontFamily="@font/poppins_semibold"/>
 
-        <!-- Current Selected Date -->
+        <!-- Selected Date -->
         <TextView
             android:id="@+id/txtSelectedDate"
             android:layout_width="wrap_content"
@@ -54,16 +54,13 @@
             android:textSize="16sp"
             android:fontFamily="@font/poppins_medium"/>
 
-        <!-- Placeholder Task -->
-        <TextView
-            android:id="@+id/txtSelectedDateTasks"
+        <!-- Tasks for Selected Date -->
+        <LinearLayout
+            android:id="@+id/layoutSelectedDateTasks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="@string/no_tasks_for_selected_date"
-            android:textColor="@color/secondary_text"
-            android:textSize="15sp"
-            android:fontFamily="@font/poppins_regular"/>
+            android:orientation="vertical"/>
 
     </LinearLayout>
 

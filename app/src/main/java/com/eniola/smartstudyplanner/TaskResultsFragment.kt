@@ -1,3 +1,4 @@
+
 package com.eniola.smartstudyplanner
 
 import android.os.Bundle
@@ -11,12 +12,16 @@ import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+/** TaskResultsFragment displays tasks matching the student's selected filters.
+ * It retrieves tasks from Firestore, filters them by course, priority, and completion status, and displays results sorted by deadline.*/
 class TaskResultsFragment : Fragment() {
 
+    // Stores the filter selections received from TaskFilterFragment.
     private var selectedCourse = "All"
     private var selectedPriority = "All"
     private var selectedStatus = "All"
 
+    /** Retrieves the selected filter values from the Fragment arguments. */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -28,6 +33,7 @@ class TaskResultsFragment : Fragment() {
         }
     }
 
+    /** Inflates the filtered task results screen. */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -41,6 +47,7 @@ class TaskResultsFragment : Fragment() {
         )
     }
 
+    /** Sets up navigation and loads tasks matching the selected filters. */
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?
@@ -55,6 +62,7 @@ class TaskResultsFragment : Fragment() {
                 R.id.imgBackResults
             )
 
+        // Return to the previous screen.
         imgBackResults.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
@@ -62,12 +70,14 @@ class TaskResultsFragment : Fragment() {
         loadFilteredTasks(view)
     }
 
+    /** Retrieves student tasks and filters them by course, priority, and status. */
     private fun loadFilteredTasks(view: View) {
 
         val user =
             FirebaseAuth.getInstance().currentUser
                 ?: return
 
+        // Connect the task results container and summary views.
         val layoutTaskResults =
             view.findViewById<LinearLayout>(
                 R.id.layoutTaskResults
@@ -78,6 +88,7 @@ class TaskResultsFragment : Fragment() {
                 R.id.txtResultsSummary
             )
 
+        // Retrieve the authenticated student's tasks from Firestore.
         FirebaseFirestore.getInstance()
             .collection("users")
             .document(user.uid)
@@ -92,20 +103,21 @@ class TaskResultsFragment : Fragment() {
                         it.toObject(Task::class.java)
                     }
 
+                // Apply the selected course, priority, and status conditions.
                 val filteredTasks =
                     tasks.filter { task ->
 
                         val courseMatches =
                             selectedCourse == "All" || task.course.equals(
-                                        selectedCourse,
-                                        ignoreCase = true
-                                    )
+                                selectedCourse,
+                                ignoreCase = true
+                            )
 
                         val priorityMatches =
                             selectedPriority == "All" || task.priority.equals(
-                                        selectedPriority,
-                                        ignoreCase = true
-                                    )
+                                selectedPriority,
+                                ignoreCase = true
+                            )
 
                         val statusMatches =
                             when (selectedStatus) {
@@ -118,6 +130,8 @@ class TaskResultsFragment : Fragment() {
                             }
                         courseMatches && priorityMatches && statusMatches
                     }
+
+                // Display the number of tasks matching the selected filters.
                 txtResultsSummary.text = "${filteredTasks.size} task(s) found"
 
                 if (filteredTasks.isEmpty()) {
@@ -128,13 +142,13 @@ class TaskResultsFragment : Fragment() {
                     return@addOnSuccessListener
                 }
 
+                // Display matching tasks in order of their deadlines.
                 filteredTasks
                     .sortedBy {
                         it.deadline?.toDate()?.time
                             ?: Long.MAX_VALUE
                     }
                     .forEach { task ->
-
                         addTask(
                             layoutTaskResults,
                             task
@@ -143,6 +157,7 @@ class TaskResultsFragment : Fragment() {
             }
     }
 
+    /** Checks whether a task's deadline has already passed. */
     private fun isPastDeadline(
         task: Task
     ): Boolean {
@@ -155,6 +170,7 @@ class TaskResultsFragment : Fragment() {
                 System.currentTimeMillis()
     }
 
+    /** Creates a result row showing the task's title, course, deadline, and priority. */
     private fun addTask(
         container: LinearLayout,
         task: Task
@@ -192,13 +208,13 @@ class TaskResultsFragment : Fragment() {
         )
     }
 
+    /** Displays a message when no tasks match the selected filters. */
     private fun showNoResults(
         container: LinearLayout
     ) {
 
         val message =
             TextView(requireContext()).apply {
-
                 text = "No tasks found"
 
                 textSize = 16f

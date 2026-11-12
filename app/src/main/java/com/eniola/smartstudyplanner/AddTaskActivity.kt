@@ -1,3 +1,4 @@
+
 package com.eniola.smartstudyplanner
 
 import android.app.DatePickerDialog
@@ -24,7 +25,11 @@ import android.provider.Settings
 import androidx.core.net.toUri
 import android.widget.ArrayAdapter
 
+/**AddTaskActivity allows students to create and save academic tasks.
+   It manages task details, date and time selection, automatic priority calculation, reminder settings, and task storage in Firestore.*/
 class AddTaskActivity : AppCompatActivity() {
+
+    // Handles saving tasks to the database.
     private val taskRepository = TaskRepository()
 
     // Stores the actual date selected by the user.
@@ -33,6 +38,7 @@ class AddTaskActivity : AppCompatActivity() {
     // Stores the actual time selected by the user.
     private var selectedTime: Calendar? = null
 
+    // Initializes the task creation screen and handles user interactions.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -87,6 +93,7 @@ class AddTaskActivity : AppCompatActivity() {
             showTimePicker(edtTaskTime)
         }
 
+        // Configure the importance selection options.
         val importanceAdapter = ArrayAdapter.createFromResource(
             this,
             R.array.importance_options,
@@ -97,6 +104,7 @@ class AddTaskActivity : AppCompatActivity() {
         )
         spinnerImportance.adapter = importanceAdapter
 
+        // Configure the urgency selection options.
         val urgencyAdapter = ArrayAdapter.createFromResource(
             this,
             R.array.urgency_options,
@@ -107,6 +115,7 @@ class AddTaskActivity : AppCompatActivity() {
         )
         spinnerUrgency.adapter = urgencyAdapter
 
+        // Configure the reminder selection options.
         val reminderAdapter = ArrayAdapter.createFromResource(
             this,
             R.array.reminder_options,
@@ -118,6 +127,7 @@ class AddTaskActivity : AppCompatActivity() {
         spinnerReminder.adapter = reminderAdapter
 
         // Priority calculation
+        // Updates the priority label and indicator based on importance and urgency.
         fun updatePriority() {
 
             val priority = TaskPriorityUtils.calculatePriority(
@@ -145,6 +155,7 @@ class AddTaskActivity : AppCompatActivity() {
         }
 
         // Importance selection
+        // Recalculates priority whenever the importance level changes.
         spinnerImportance.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
 
@@ -164,6 +175,7 @@ class AddTaskActivity : AppCompatActivity() {
             }
 
         // Urgency selection
+        // Recalculates priority whenever the urgency level changes.
         spinnerUrgency.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
 
@@ -186,6 +198,7 @@ class AddTaskActivity : AppCompatActivity() {
         // Both Spinners start at position 0: "Select importance" and "Select urgency".
         // Therefore, the task starts with: No Priority
         updatePriority()
+
         // Reminder: No reminder is the first option, so position 0 is automatically selected.
         // I use the selected position when the task is saved.
 
@@ -196,52 +209,54 @@ class AddTaskActivity : AppCompatActivity() {
                 R.id.btnSaveTask
             )
 
+        // Access the system service used to schedule reminder alarms.
         val alarmManager =
             getSystemService(ALARM_SERVICE) as android.app.AlarmManager
 
+        // Validate and save the task when the Save button is clicked.
         btnSaveTask.setOnClickListener {
-            // Prevent multiple taps while saving.
-            btnSaveTask.isEnabled = false
-            btnSaveTask.text = "Saving..."
 
-            val taskTitle = edtTaskTitle.text.toString().trim()
+            val taskTitle =
+                edtTaskTitle.text.toString().trim()
 
             // Make sure the user entered a task title.
             if (taskTitle.isEmpty()) {
-                edtTaskTitle.error = getString(R.string.task_title_required)
 
-                btnSaveTask.isEnabled = true
-                btnSaveTask.text = getString(R.string.save_task)
+                edtTaskTitle.error =
+                    getString(R.string.task_title_required)
 
                 return@setOnClickListener
             }
+
             // Make sure a date was selected.
             if (selectedDate == null) {
+
                 Toast.makeText(
                     this,
                     "Please select a date",
                     Toast.LENGTH_SHORT
                 ).show()
-                btnSaveTask.isEnabled = true
-                btnSaveTask.text = getString(R.string.save_task)
+
                 return@setOnClickListener
             }
 
             // Make sure a time was selected.
             if (selectedTime == null) {
+
                 Toast.makeText(
                     this,
                     "Please select a time",
                     Toast.LENGTH_SHORT
                 ).show()
 
-                btnSaveTask.isEnabled = true
-                btnSaveTask.text = getString(R.string.save_task)
-
                 return@setOnClickListener
             }
 
-            // Combine the selected date and selected time.
+            // Prevent multiple taps after validation.
+            btnSaveTask.isEnabled = false
+            btnSaveTask.text = "Saving..."
+
+            // Combine the selected date and time.
             val taskDateTime =
                 Calendar.getInstance().apply {
 
@@ -275,22 +290,26 @@ class AddTaskActivity : AppCompatActivity() {
                     set(Calendar.MILLISECOND, 0)
                 }
 
-            // Convert the reminder selection into minutes.
+            // Convert the selected reminder into minutes.
             val reminderMinutes =
                 ReminderUtils.getReminderMinutes(
                     spinnerReminder.selectedItemPosition
                 )
 
+            // Check exact alarm permission only when the student actually selected a reminder.
             if (
-                reminderMinutes > 0 &&
-                android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S &&
+                android.os.Build.VERSION.SDK_INT >=
+                android.os.Build.VERSION_CODES.S &&
                 !alarmManager.canScheduleExactAlarms()
             ) {
+
                 val intent = Intent(
                     Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
                     "package:$packageName".toUri()
                 )
+
                 startActivity(intent)
+
                 Toast.makeText(
                     this,
                     "Please allow alarms and reminders for Smart Study Planner.",
@@ -298,7 +317,8 @@ class AddTaskActivity : AppCompatActivity() {
                 ).show()
 
                 btnSaveTask.isEnabled = true
-                btnSaveTask.text = getString(R.string.save_task)
+                btnSaveTask.text =
+                    getString(R.string.save_task)
 
                 return@setOnClickListener
             }
@@ -307,51 +327,74 @@ class AddTaskActivity : AppCompatActivity() {
             val importance =
                 spinnerImportance.selectedItem.toString()
 
-// Get the selected urgency.
+            // Get the selected urgency.
             val urgency =
                 spinnerUrgency.selectedItem.toString()
 
-// Get the calculated priority.
+            // Calculate the task priority.
             val priority =
                 TaskPriorityUtils.calculatePriority(
                     spinnerImportance.selectedItemPosition,
                     spinnerUrgency.selectedItemPosition
                 )
 
-// Get the selected reminder.
+            // Get the selected reminder.
             val reminder =
                 spinnerReminder.selectedItem.toString()
 
-// Create the task object.
-            val task = Task(
-                title = taskTitle,
-                course = edtTaskCourse.text.toString().trim(),
-                description = edtTaskDescription.text.toString().trim(),
+            // Create the task object.
+            val task =
+                Task(
+                    title = taskTitle,
 
-                deadline = com.google.firebase.Timestamp(taskDateTime.time),
+                    course =
+                        edtTaskCourse.text
+                            .toString()
+                            .trim(),
 
-                date = edtTaskDate.text.toString(),
-                time = edtTaskTime.text.toString(),
+                    description =
+                        edtTaskDescription.text
+                            .toString()
+                            .trim(),
 
-                importance = importance,
-                urgency = urgency,
-                priority = priority.displayName,
-                reminder = reminder,
+                    deadline =
+                        com.google.firebase.Timestamp(
+                            taskDateTime.time
+                        ),
 
-                completed = false
-            )
+                    date =
+                        edtTaskDate.text.toString(),
 
-// Save the task to Firestore.
+                    time =
+                        edtTaskTime.text.toString(),
+
+                    importance = importance,
+
+                    urgency = urgency,
+
+                    priority =
+                        priority.displayName,
+
+                    reminder = reminder,
+
+                    completed = false
+                )
+
+            // Save the task to Firestore.
             taskRepository.saveTask(
+
                 task = task,
                 onSuccess = {
-                    // Schedule the reminder after the task is saved.
+
+                    // Schedule the task-time notification.
+                    // If an advance reminder was selected, ReminderScheduler will schedule that too.
                     ReminderScheduler.scheduleReminder(
                         context = this,
                         taskTitle = taskTitle,
                         taskDateTime = taskDateTime,
                         reminderMinutes = reminderMinutes
                     )
+
                     Toast.makeText(
                         this,
                         "Task saved successfully",
@@ -363,8 +406,11 @@ class AddTaskActivity : AppCompatActivity() {
 
                 onError = { exception ->
 
+                    // Allow the student to try again.
                     btnSaveTask.isEnabled = true
-                    btnSaveTask.text = getString(R.string.save_task)
+
+                    btnSaveTask.text =
+                        getString(R.string.save_task)
 
                     Toast.makeText(
                         this,
@@ -376,20 +422,12 @@ class AddTaskActivity : AppCompatActivity() {
         }
     }
 
-    // DATE PICKER
+    // Opens the date picker and stores the selected task date.
     private fun showDatePicker(dateTextView: TextView) {
         val calendar = Calendar.getInstance()
-
-        val year =
-            calendar.get(Calendar.YEAR)
-
-        val month =
-            calendar.get(Calendar.MONTH)
-
-        val day =
-            calendar.get(Calendar.DAY_OF_MONTH)
-
-
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
         val datePicker = DatePickerDialog(
             this,
             R.style.BlueDateTimePicker,
@@ -432,6 +470,7 @@ class AddTaskActivity : AppCompatActivity() {
             month,
             day
         )
+        // Apply the application's primary colour to the date picker buttons.
         datePicker.setOnShowListener {
 
             datePicker.getButton(
@@ -456,7 +495,8 @@ class AddTaskActivity : AppCompatActivity() {
         datePicker.show()
 
     }
-    // TIME PICKER
+
+    // Opens the time picker and stores the selected task time.
     private fun showTimePicker(timeTextView: TextView) {
         val calendar = Calendar.getInstance()
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
@@ -505,6 +545,7 @@ class AddTaskActivity : AppCompatActivity() {
             false
         )
 
+        // Apply the application's primary colour to the time picker buttons.
         timePicker.setOnShowListener {
 
             timePicker.getButton(

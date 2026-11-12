@@ -3,7 +3,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background">
@@ -12,6 +11,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
+        android:overScrollMode="never"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,18 +38,116 @@
                 android:id="@+id/txtCalendarSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="4dp"
                 android:text="@string/calendar_subtitle"
                 android:textColor="@color/secondary_text"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:fontFamily="@font/poppins_regular"/>
 
-            <!-- Calendar Header -->
-            <include
-                android:id="@+id/includeCalendarHeader"
-                layout="@layout/calendar_header"/>
+            <!-- Calendar Navigation -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardCalendarNavigation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:cardBackgroundColor="@color/background"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/divider"
+                app:strokeWidth="1dp">
 
-            <!-- Calendar Grid -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
+
+                    <ImageButton
+                        android:id="@+id/btnCalendarPrevious"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Previous"
+                        android:src="@drawable/ic_chevron_left"
+                        app:tint="@color/primary_dark"/>
+
+                    <TextView
+                        android:id="@+id/txtCalendarPeriod"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="September 2026"
+                        android:textColor="@color/primary_text"
+                        android:textSize="18sp"
+                        android:fontFamily="@font/poppins_semibold"/>
+
+                    <ImageButton
+                        android:id="@+id/btnCalendarNext"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Next"
+                        android:src="@drawable/ic_chevron_right"
+                        app:tint="@color/primary_dark"/>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- View Selector -->
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/calendarViewToggle"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginTop="16dp"
+                app:singleSelection="true"
+                app:selectionRequired="true"
+                app:checkedButton="@id/btnCalendarMonth">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCalendarDay"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Day"
+                    android:textAllCaps="false"
+                    android:textColor="@color/primary"
+                    android:textSize="13sp"
+                    app:backgroundTint="@color/background"
+                    app:strokeColor="@color/primary"
+                    app:strokeWidth="1dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCalendarWeek"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Week"
+                    android:textAllCaps="false"
+                    android:textColor="@color/primary"
+                    android:textSize="13sp"
+                    app:backgroundTint="@color/background"
+                    app:strokeColor="@color/primary"
+                    app:strokeWidth="1dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCalendarMonth"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Month"
+                    android:textAllCaps="false"
+                    android:textColor="@color/button_text"
+                    android:textSize="13sp"
+                    app:backgroundTint="@color/primary"
+                    app:strokeColor="@color/primary"
+                    app:strokeWidth="1dp"/>
+
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            <!-- Calendar Content -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerCalendar"
                 android:layout_width="match_parent"
@@ -58,13 +156,36 @@
                 android:nestedScrollingEnabled="false"
                 android:overScrollMode="never"/>
 
-            <!-- Selected Date Card -->
+            <!-- Day Tasks -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerDayTasks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                android:visibility="gone"/>
+
+            <!-- No Tasks Message -->
+            <TextView
+                android:id="@+id/txtNoDayTasks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:text="No tasks for this day"
+                android:textColor="@color/secondary_text"
+                android:textSize="14sp"
+                android:fontFamily="@font/poppins_regular"
+                android:visibility="gone"/>
+
+            <!-- Selected Date -->
             <include
                 android:id="@+id/includeSelectedDate"
                 layout="@layout/calendar_selected_date"/>
 
         </LinearLayout>
 
-
     </androidx.core.widget.NestedScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

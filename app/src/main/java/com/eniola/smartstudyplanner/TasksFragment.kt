@@ -1,3 +1,4 @@
+
 package com.eniola.smartstudyplanner
 
 import android.os.Bundle
@@ -12,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
+import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.eniola.smartstudyplanner.utils.TaskPriorityUtils
 import java.text.SimpleDateFormat
@@ -23,14 +25,21 @@ import com.google.firebase.Timestamp
 import java.util.Date
 import android.app.AlertDialog
 
+/** TasksFragment displays and manages the student's academic tasks.
+ * It provides task filtering, searching, completion tracking, daily progress monitoring, and rescheduling of missed tasks.*/
 class TasksFragment : Fragment() {
 
+    // Stores the selected task filters and search query.
     private var selectedFilter = "today"
     private var searchQuery = ""
     private var selectedCourse = "All"
     private var selectedPriority = "All"
     private var selectedStatus = "All"
 
+    // Shares the user's task data with the other screens.
+    private lateinit var taskViewModel: TaskViewModel
+
+    /** Initializes the task screen, filters, and shared task data. */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -42,7 +51,23 @@ class TasksFragment : Fragment() {
             container,
             false
         )
+
+        // Gets the ViewModel shared with the Activity.
+        taskViewModel =
+            ViewModelProvider(requireActivity())[TaskViewModel::class.java]
+
         displayTasksDate(view)
+
+        // Open the Upcoming tab when requested by another screen.
+        if (
+            arguments?.getBoolean(
+                "openUpcoming",
+                false
+            ) == true
+        ) {
+            selectedFilter = "upcoming"
+        }
+
         setupFilterButtons(view)
         setupSearch(view)
 
@@ -54,6 +79,8 @@ class TasksFragment : Fragment() {
         imgFilterTasks.setOnClickListener {
             openTaskFilter()
         }
+
+        // Receive and apply selected course, priority, and status filters.
         parentFragmentManager.setFragmentResultListener(
             "taskFilterResult",
             viewLifecycleOwner
@@ -77,12 +104,27 @@ class TasksFragment : Fragment() {
                     "All"
                 )
 
-            loadTasks(view)
+            displayTasks(view, taskViewModel.tasks.value ?: emptyList())
         }
-        loadTasks(view)
+
+        // Observe the shared task data from the ViewModel.
+        taskViewModel.tasks.observe(viewLifecycleOwner) { tasks ->
+
+            if (!isAdded || view != this.view) {
+                return@observe
+            }
+
+            // Display the current task data using the existing filters and UI.
+            displayTasks(view, tasks)
+        }
+
+        // Load tasks through the shared ViewModel.
+        taskViewModel.loadTasks()
+
         return view
     }
 
+    /** Displays the current date at the top of the Tasks screen. */
     private fun displayTasksDate(view: View) {
 
         val txtTasksDate =
@@ -102,6 +144,7 @@ class TasksFragment : Fragment() {
             )
     }
 
+    /** Configures the Today, Upcoming, Completed, and Missed task filters. */
     private fun setupFilterButtons(view: View) {
 
         val btnToday =
@@ -124,38 +167,44 @@ class TasksFragment : Fragment() {
                 R.id.btnFilterMissed
             )
 
+        // Display today's tasks.
         btnToday.setOnClickListener {
             selectedFilter = "today"
             updateSelectedFilter(view)
-            loadTasks(view)
+            displayTasks(view, taskViewModel.tasks.value ?: emptyList())
         }
 
+        // Display upcoming tasks.
         btnUpcoming.setOnClickListener {
             selectedFilter = "upcoming"
             updateSelectedFilter(view)
-            loadTasks(view)
+            displayTasks(view, taskViewModel.tasks.value ?: emptyList())
         }
 
+        // Display completed tasks.
         btnCompleted.setOnClickListener {
             selectedFilter = "completed"
             updateSelectedFilter(view)
-            loadTasks(view)
+            displayTasks(view, taskViewModel.tasks.value ?: emptyList())
         }
 
+        // Display missed tasks.
         btnMissed.setOnClickListener {
             selectedFilter = "missed"
             updateSelectedFilter(view)
-            loadTasks(view)
+            displayTasks(view, taskViewModel.tasks.value ?: emptyList())
         }
 
         updateSelectedFilter(view)
     }
 
+    /** Opens the task search screen when the search icon is selected. */
     private fun setupSearch(view: View) {
         val imgSearchTasks =
             view.findViewById<android.widget.ImageView>(
                 R.id.imgSearchTasks
             )
+
         imgSearchTasks.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(
@@ -166,6 +215,7 @@ class TasksFragment : Fragment() {
                 .commit()
         }
     }
+
     // Open the task filter screen.
     private fun openTaskFilter() {
 
@@ -178,6 +228,7 @@ class TasksFragment : Fragment() {
             .commit()
     }
 
+    /** Highlights the currently selected task filter button. */
     private fun updateSelectedFilter(view: View) {
 
         val buttons = listOf(
@@ -202,6 +253,7 @@ class TasksFragment : Fragment() {
             "missed"
         )
 
+        // Apply active and inactive colors to the filter buttons.
         for (i in buttons.indices) {
 
             if (names[i] == selectedFilter) {
@@ -239,146 +291,141 @@ class TasksFragment : Fragment() {
         }
     }
 
-    private fun loadTasks(view: View) {
-
-        val user =
-            FirebaseAuth.getInstance().currentUser
-
-        if (user == null) {
-            return
-        }
+    /** Filters, sorts, and displays tasks based on the student's selections. */
+    private fun displayTasks(
+        view: View,
+        tasks: List<Task>
+    ) {
 
         val layoutAllTasks =
             view.findViewById<LinearLayout>(
                 R.id.layoutAllTasks
             )
 
-        val firestore =
-            FirebaseFirestore.getInstance()
+        layoutAllTasks.removeAllViews()
 
-        firestore
-            .collection("users")
-            .document(user.uid)
-            .collection("tasks")
-            .get()
-            .addOnSuccessListener { documents ->
+        updateTodayProgress(
+            view,
+            tasks
+        )
 
-                layoutAllTasks.removeAllViews()
+        // Select tasks belonging to the active task category.
+        val filteredTasks =
+            when (selectedFilter) {
 
-                val tasks =
-                    documents.map {
-                        it.toObject(Task::class.java)
+                "today" ->
+                    getTodayTasks(tasks)
+
+                "upcoming" ->
+                    getUpcomingTasks(tasks)
+
+                "completed" ->
+                    tasks.filter {
+                        it.completed
                     }
 
-                updateTodayProgress(
-                    view,
-                    tasks
-                )
-
-                val filteredTasks =
-                    when (selectedFilter) {
-
-                        "today" ->
-                            getTodayTasks(tasks)
-
-                        "upcoming" ->
-                            getUpcomingTasks(tasks)
-
-                        "completed" ->
-                            tasks.filter {
-                                it.completed
-                            }
-
-                        "missed" ->
-                            tasks.filter {
-                                !it.completed &&
-                                        isPastDeadline(it)
-                            }
-
-                        else ->
-                            emptyList()
+                "missed" ->
+                    tasks.filter {
+                        !it.completed &&
+                                isPastDeadline(it)
                     }
 
-                // Apply the Course, Priority, and Status filters.
-                val filteredByOptions =
-                    filteredTasks.filter { task ->
-                        val courseMatches =
-                            selectedCourse == "All" ||
-                                    task.course.equals(
-                                        selectedCourse,
-                                        ignoreCase = true
-                                    )
-                        val priorityMatches =
-                            selectedPriority == "All" ||
-                                    task.priority.equals(
-                                        selectedPriority,
-                                        ignoreCase = true
-                                    )
-                        val statusMatches =
-                            when (selectedStatus) {
+                else ->
+                    emptyList()
+            }
 
-                                "All" -> true
+        // Apply the Course, Priority, and Status filters.
+        val filteredByOptions =
+            filteredTasks.filter { task ->
 
-                                "Pending" ->
-                                    !task.completed &&
-                                            !isPastDeadline(task)
+                val courseMatches =
+                    selectedCourse == "All" ||
+                            task.course.equals(
+                                selectedCourse,
+                                ignoreCase = true
+                            )
 
-                                "Completed" ->
-                                    task.completed
+                val priorityMatches =
+                    selectedPriority == "All" ||
+                            task.priority.equals(
+                                selectedPriority,
+                                ignoreCase = true
+                            )
 
-                                "Missed" ->
-                                    !task.completed &&
-                                            isPastDeadline(task)
+                val statusMatches =
+                    when (selectedStatus) {
 
-                                else -> true
-                            }
+                        "All" -> true
 
-                        courseMatches &&
-                                priorityMatches &&
-                                statusMatches
+                        "Pending" ->
+                            !task.completed &&
+                                    !isPastDeadline(task)
+
+                        "Completed" ->
+                            task.completed
+
+                        "Missed" ->
+                            !task.completed &&
+                                    isPastDeadline(task)
+
+                        else -> true
                     }
 
-                val searchedTasks =
-                    if (searchQuery.isBlank()) {
-                        filteredByOptions
-                    } else {
-                        filteredByOptions.filter { task -> task.title.contains(
+                courseMatches &&
+                        priorityMatches &&
+                        statusMatches
+            }
+
+        // Match the search query against task titles, courses, and descriptions.
+        val searchedTasks =
+            if (searchQuery.isBlank()) {
+
+                filteredByOptions
+
+            } else {
+
+                filteredByOptions.filter { task ->
+
+                    task.title.contains(
+                        searchQuery,
+                        ignoreCase = true
+                    ) ||
+                            task.course.contains(
                                 searchQuery,
                                 ignoreCase = true
-                            ) || task.course.contains(
-                                        searchQuery,
-                                        ignoreCase = true
-                                    ) || task.description.contains(
-                                        searchQuery,
-                                        ignoreCase = true
-                                    )
-                        }
-                    }
-
-                val sortedTasks =
-                    sortTasksByPriorityAndDate(
-                        searchedTasks
-                    )
-
-                if (sortedTasks.isEmpty()) {
-
-                    showEmptyMessage(
-                        layoutAllTasks
-                    )
-
-                    return@addOnSuccessListener
-                }
-
-                sortedTasks.forEach { task ->
-
-                    addTask(
-                        layoutAllTasks,
-                        task
-                    )
+                            ) ||
+                            task.description.contains(
+                                searchQuery,
+                                ignoreCase = true
+                            )
                 }
             }
+
+        val sortedTasks =
+            sortTasksByPriorityAndDate(
+                searchedTasks
+            )
+
+        if (sortedTasks.isEmpty()) {
+
+            showEmptyMessage(
+                layoutAllTasks
+            )
+
+            return
+        }
+
+        // Add each matching task to the task list.
+        sortedTasks.forEach { task ->
+
+            addTask(
+                layoutAllTasks,
+                task
+            )
+        }
     }
 
+    /** Calculates and displays today's task completion percentage. */
     private fun updateTodayProgress(
         view: View,
         tasks: List<Task>
@@ -417,6 +464,7 @@ class TasksFragment : Fragment() {
                 R.id.progressTodayTasks
             )
 
+        // Update the progress text and progress bar.
         txtTaskProgress.text =
             view.context.getString(
                 R.string.tasks_progress_format,
@@ -434,10 +482,12 @@ class TasksFragment : Fragment() {
             percentage
     }
 
+    /** Returns tasks whose deadlines fall within the current day. */
     private fun getTodayTasks(
         tasks: List<Task>
     ): List<Task> {
 
+        // Determine the beginning of today and tomorrow.
         val startOfToday =
             Calendar.getInstance().apply {
 
@@ -475,6 +525,7 @@ class TasksFragment : Fragment() {
         }
     }
 
+    /** Returns incomplete tasks scheduled from tomorrow onward. */
     private fun getUpcomingTasks(
         tasks: List<Task>
     ): List<Task> {
@@ -504,6 +555,7 @@ class TasksFragment : Fragment() {
         }
     }
 
+    /** Checks whether a task has passed its scheduled deadline. */
     private fun isPastDeadline(
         task: Task
     ): Boolean {
@@ -516,6 +568,7 @@ class TasksFragment : Fragment() {
                 System.currentTimeMillis()
     }
 
+    /** Sorts tasks by priority level and then by their deadlines. */
     private fun sortTasksByPriorityAndDate(
         tasks: List<Task>
     ): List<Task> {
@@ -542,6 +595,7 @@ class TasksFragment : Fragment() {
         )
     }
 
+    /** Displays an appropriate message when the selected task list is empty. */
     private fun showEmptyMessage(
         container: LinearLayout
     ) {
@@ -593,11 +647,13 @@ class TasksFragment : Fragment() {
         )
     }
 
+    /** Creates a task row with details, completion controls, and rescheduling options. */
     private fun addTask(
         container: LinearLayout,
         task: Task
     ) {
         if (!isAdded) return
+
         val itemView =
             LayoutInflater.from(requireContext())
                 .inflate(
@@ -641,6 +697,7 @@ class TasksFragment : Fragment() {
                 R.id.txtTaskPriority
             )
 
+        // Display the task's title, course, and deadline.
         txtTaskTitle.text =
             task.title
 
@@ -695,6 +752,7 @@ class TasksFragment : Fragment() {
 
             } else if (!task.completed) {
 
+                // Show the remaining time for incomplete upcoming tasks.
                 txtTaskDueStatus.text =
                     getDueStatus(
                         deadlineTime
@@ -708,6 +766,7 @@ class TasksFragment : Fragment() {
             }
         }
 
+        // Format the task priority using its corresponding color.
         val priority =
             TaskPriorityUtils.getPriorityFromName(
                 task.priority
@@ -726,6 +785,7 @@ class TasksFragment : Fragment() {
             )
         )
 
+        // Allow students to mark tasks as completed or incomplete.
         checkTaskCompleted.isChecked =
             task.completed
 
@@ -764,6 +824,7 @@ class TasksFragment : Fragment() {
         )
     }
 
+    /** Updates the task completion status in Firestore and refreshes task data. */
     private fun updateTaskCompletion(
         taskId: String,
         completed: Boolean
@@ -785,11 +846,13 @@ class TasksFragment : Fragment() {
             .addOnSuccessListener {
 
                 view?.let {
-                    loadTasks(it)
+                    // Refresh the shared task data after the update.
+                    taskViewModel.loadTasks()
                 }
             }
     }
 
+    /** Calculates a readable countdown describing when a task is due. */
     private fun getDueStatus(
         deadlineTime: Long
     ): String {
@@ -812,6 +875,7 @@ class TasksFragment : Fragment() {
         val month =
             30 * day
 
+        // Select a suitable time description based on the remaining duration.
         return when {
 
             difference <= day -> {
@@ -890,8 +954,10 @@ class TasksFragment : Fragment() {
         }
     }
 
+    /** Opens confirmation, date, and time dialogs for rescheduling a task. */
     private fun showRescheduleDialog(task: Task) {
         val context = context ?: return
+
         AlertDialog.Builder(context)
             .setTitle("Reschedule Task?")
             .setMessage(
@@ -969,6 +1035,7 @@ class TasksFragment : Fragment() {
             .show()
     }
 
+    /** Saves the task's updated deadline and resets its completion status. */
     private fun saveRescheduledTask(
         task: Task,
         calendar: Calendar
@@ -983,6 +1050,7 @@ class TasksFragment : Fragment() {
                 Date(calendar.timeInMillis)
             )
 
+        // Format the newly selected date and time for display.
         val dateFormat =
             SimpleDateFormat(
                 "dd/MM/yyyy",
@@ -1001,6 +1069,7 @@ class TasksFragment : Fragment() {
         val newTime =
             timeFormat.format(calendar.time)
 
+        // Update the selected task in Firestore.
         FirebaseFirestore.getInstance()
             .collection("users")
             .document(user.uid)
@@ -1017,7 +1086,8 @@ class TasksFragment : Fragment() {
             .addOnSuccessListener {
 
                 view?.let {
-                    loadTasks(it)
+                    // Refresh the shared task data after the update.
+                    taskViewModel.loadTasks()
                 }
             }
     }

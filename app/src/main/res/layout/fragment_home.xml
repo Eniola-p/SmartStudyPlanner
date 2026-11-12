@@ -28,30 +28,58 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Greeting Section -->
-            <TextView
-                android:id="@+id/txtGreeting"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textColor="@color/primary_text"
-                android:textSize="28sp"
-                android:fontFamily="@font/poppins_bold"/>
+            <!-- Greeting Header -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/txtCurrentDate"
+                <!-- Greeting and date -->
+                <LinearLayout
+                    android:id="@+id/layoutGreeting"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/imgHomeProfile"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                    <TextView
+                        android:id="@+id/txtGreeting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="@color/primary_text"
+                        android:textSize="28sp"
+                        android:fontFamily="@font/poppins_bold"/>
 
-                android:layout_marginTop="6dp"
+                    <TextView
+                        android:id="@+id/txtCurrentDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/placeholder_date"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="16sp"
+                        android:fontFamily="@font/poppins_regular"/>
 
-                android:text="@string/placeholder_date"
+                </LinearLayout>
 
-                android:textColor="@color/secondary_text"
-                android:textSize="16sp"
 
-                android:fontFamily="@font/poppins_regular"/>
+                <!-- Profile picture -->
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/imgHomeProfile"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_profile"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="Profile"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:shapeAppearanceOverlay="@style/HomeProfileImage"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- Today's Study Tasks -->
             <include
@@ -65,9 +93,6 @@
             <include
                 layout="@layout/home_card_study_progress" />
 
-            <!-- Quick Actions -->
-            <include
-                layout="@layout/home_card_quick_actions" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

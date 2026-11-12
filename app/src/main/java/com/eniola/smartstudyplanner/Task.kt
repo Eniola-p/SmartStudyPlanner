@@ -1,7 +1,10 @@
+
 package com.eniola.smartstudyplanner
 
 import com.google.firebase.Timestamp
 
+/** Task defines the data model for a student's academic activity.
+ * It stores task details, deadlines, priority information, reminder preferences, and completion status for use throughout the application.*/
 data class Task(
     val id: String = "",
     val title: String = "",
@@ -15,6 +18,7 @@ data class Task(
     val date: String = "",
     val time: String = "",
 
+    // Stores the task's importance, urgency, and calculated priority.
     val importance: String = "",
     val urgency: String = "",
     val priority: String = "No Priority",

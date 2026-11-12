@@ -4,7 +4,7 @@ import com.eniola.smartstudyplanner.enums.Priority
 import java.time.LocalDate
 
 /** Represents one cell in the monthly calendar.
- * A cell may either contain a real date or be an empty placeholder.*/
+    A cell may either contain a real date or be an empty placeholder.*/
 data class CalendarDay(
 
     // Null means this is an empty placeholder cell.

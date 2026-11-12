@@ -1,3 +1,4 @@
+
 package com.eniola.smartstudyplanner
 
 import android.os.Bundle
@@ -9,16 +10,24 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import android.content.Intent
 import android.widget.TextView
+
+/** SignUpActivity handles student account registration.
+  It validates personal details and passwords, creates accounts using Firebase Authentication, and saves user profiles to Firestore.*/
 class SignUpActivity : AppCompatActivity() {
 
     // Firebase Authentication instance used to create and manage user accounts.
     private lateinit var auth: FirebaseAuth
+
+    // Handles saving new student profile information.
     private val userRepository = UserRepository()
+
+    /** Initializes the registration screen and handles account creation. */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
         val txtLogin = findViewById<TextView>(R.id.txtLogin)
 
+        // Navigate to the Login screen when selected.
         txtLogin.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
@@ -50,6 +59,7 @@ class SignUpActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // Ensure the student enters a valid first and last name.
             if (!fullName.matches(Regex("^[A-Za-z]{2,}(\\s+[A-Za-z]{2,})+$"))) {
                 edtFullName.error = "Enter a valid first and last name"
                 edtFullName.requestFocus()
@@ -63,6 +73,7 @@ class SignUpActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // Check that the email follows a valid address format.
             if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                 edtEmail.error = "Enter a valid email address"
                 edtEmail.requestFocus()
@@ -76,7 +87,8 @@ class SignUpActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (!password.matches(Regex("^(?=.*[A-Z])(?=.*\\d)(?=.*[@#\$%^&+=!]).{6,12}$"))) {
+            // Enforce the required password length and character combinations.
+            if (!password.matches(Regex("^(?=.*[A-Z])(?=.*\\d)(?=.*[@#\\$%^&+=!]).{6,12}$"))) {
                 edtPassword.error =
                     "Password must be 6-12 characters with a capital letter, number and special character"
                 edtPassword.requestFocus()
@@ -90,6 +102,7 @@ class SignUpActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // Ensure both entered passwords are identical.
             if (password != confirmPassword) {
                 edtConfirmPassword.error = "Passwords do not match"
                 edtConfirmPassword.requestFocus()
@@ -99,10 +112,10 @@ class SignUpActivity : AppCompatActivity() {
             // Create a Firebase account and open the Login screen if registration succeeds.
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
-
                     if (task.isSuccessful) {
                         val firebaseUser = auth.currentUser
 
+                        // Set the student's full name in Firebase Authentication.
                         val profileUpdates =
                             com.google.firebase.auth.UserProfileChangeRequest.Builder()
                                 .setDisplayName(fullName)
@@ -110,12 +123,12 @@ class SignUpActivity : AppCompatActivity() {
 
                         firebaseUser?.updateProfile(profileUpdates)
 
+                        // Save the student's name and email to their profile record.
                         userRepository.saveUserProfile(
                             fullName = fullName,
                             email = email,
 
                             onSuccess = {
-
                                 Toast.makeText(
                                     this,
                                     "Account created successfully!",
@@ -133,7 +146,6 @@ class SignUpActivity : AppCompatActivity() {
                             },
 
                             onError = { exception ->
-
                                 Toast.makeText(
                                     this,
                                     "Account created, but profile could not be saved: ${exception.message}",
@@ -143,6 +155,7 @@ class SignUpActivity : AppCompatActivity() {
                         )
                     } else {
 
+                        // Display the Firebase error if account registration fails.
                         Toast.makeText(
                             this,
                             task.exception?.localizedMessage

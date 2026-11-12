@@ -1,3 +1,4 @@
+
 package com.eniola.smartstudyplanner
 
 import android.app.DatePickerDialog
@@ -20,21 +21,29 @@ import com.eniola.smartstudyplanner.utils.TaskPriorityUtils
 import java.util.Calendar
 import java.util.Locale
 import com.eniola.smartstudyplanner.utils.ReminderScheduler
+
+/**EditTaskActivity allows students to modify existing study tasks.
+  It loads task details from Firestore, updates task information,recalculates priorities, and reschedules reminders after saving.*/
 class EditTaskActivity : AppCompatActivity() {
 
+    // Input fields for the task's title, course, and description.
     private lateinit var edtTaskTitle: TextInputEditText
     private lateinit var edtTaskCourse: TextInputEditText
     private lateinit var edtTaskDescription: TextInputEditText
 
+    // Displays the selected task date and time.
     private lateinit var edtTaskDate: TextView
     private lateinit var edtTaskTime: TextView
 
+    // Dropdown menus for importance, urgency, and reminder settings.
     private lateinit var spinnerImportance: Spinner
     private lateinit var spinnerUrgency: Spinner
     private lateinit var spinnerReminder: Spinner
 
+    // Displays the calculated task priority.
     private lateinit var txtCalculatedPriority: TextView
 
+    // Stores the task's selected and original scheduling details.
     private var selectedDate: Calendar? = null
     private var selectedTime: Calendar? = null
     private var originalCompleted = false
@@ -42,14 +51,17 @@ class EditTaskActivity : AppCompatActivity() {
     private var taskId: String = ""
     private var originalReminderMinutes = 0
 
+    // Provides access to the Firestore database.
     private val firestore =
         FirebaseFirestore.getInstance()
 
+    // Initializes the task editing screen and loads the selected task.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_add_task)
 
+        // Retrieve the ID of the task being edited.
         taskId =
             intent.getStringExtra("taskId") ?: ""
 
@@ -72,6 +84,7 @@ class EditTaskActivity : AppCompatActivity() {
         loadTask()
     }
 
+    // Connects the task editing fields to their XML layout components.
     private fun connectViews() {
 
         edtTaskTitle =
@@ -102,6 +115,7 @@ class EditTaskActivity : AppCompatActivity() {
             findViewById(R.id.txtCalculatedPriority)
     }
 
+    // Configures the dropdown menus for task importance, urgency, and reminders.
     private fun setupSpinners() {
 
         val importanceAdapter =
@@ -147,6 +161,7 @@ class EditTaskActivity : AppCompatActivity() {
             reminderAdapter
     }
 
+    // Enables date and time selection through their respective picker dialogs.
     private fun setupDateAndTimePickers() {
 
         val layoutTaskDate =
@@ -176,8 +191,10 @@ class EditTaskActivity : AppCompatActivity() {
         }
     }
 
+    // Automatically updates task priority when importance or urgency changes.
     private fun setupPriorityCalculation() {
 
+        // Calculates and displays the priority based on selected values.
         fun updatePriority() {
 
             val priority =
@@ -193,6 +210,7 @@ class EditTaskActivity : AppCompatActivity() {
                 )
         }
 
+        // Recalculate priority when the importance selection changes.
         spinnerImportance.onItemSelectedListener =
             object :
                 android.widget.AdapterView.OnItemSelectedListener {
@@ -211,6 +229,7 @@ class EditTaskActivity : AppCompatActivity() {
                 ) {}
             }
 
+        // Recalculate priority when the urgency selection changes.
         spinnerUrgency.onItemSelectedListener =
             object :
                 android.widget.AdapterView.OnItemSelectedListener {
@@ -230,6 +249,7 @@ class EditTaskActivity : AppCompatActivity() {
             }
     }
 
+    // Validates and saves task changes, then updates the scheduled reminders.
     private fun setupSaveButton() {
 
         val btnSaveTask =
@@ -242,6 +262,7 @@ class EditTaskActivity : AppCompatActivity() {
             val title =
                 edtTaskTitle.text.toString().trim()
 
+            // Ensure the task has a title.
             if (title.isBlank()) {
 
                 edtTaskTitle.error =
@@ -250,6 +271,7 @@ class EditTaskActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // Ensure the task has a selected date.
             if (selectedDate == null) {
 
                 Toast.makeText(
@@ -261,6 +283,7 @@ class EditTaskActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // Ensure the task has a selected time.
             if (selectedTime == null) {
 
                 Toast.makeText(
@@ -272,9 +295,11 @@ class EditTaskActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // Prevent repeated submissions while saving.
             btnSaveTask.isEnabled = false
             btnSaveTask.text = "Saving..."
 
+            // Combine the selected date and time into one deadline.
             val taskDateTime =
                 Calendar.getInstance().apply {
 
@@ -307,18 +332,21 @@ class EditTaskActivity : AppCompatActivity() {
                     set(Calendar.MILLISECOND, 0)
                 }
 
+            // Retrieve the updated importance and urgency levels.
             val importance =
                 spinnerImportance.selectedItem.toString()
 
             val urgency =
                 spinnerUrgency.selectedItem.toString()
 
+            // Calculate the new task priority.
             val priority =
                 TaskPriorityUtils.calculatePriority(
                     spinnerImportance.selectedItemPosition,
                     spinnerUrgency.selectedItemPosition
                 )
 
+            // Retrieve the selected reminder and its interval in minutes.
             val reminder =
                 spinnerReminder.selectedItem.toString()
 
@@ -327,6 +355,7 @@ class EditTaskActivity : AppCompatActivity() {
                     spinnerReminder.selectedItemPosition
                 )
 
+            // Create the updated task while preserving its ID and completion status.
             val updatedTask =
                 Task(
                     id = taskId,
@@ -368,6 +397,7 @@ class EditTaskActivity : AppCompatActivity() {
                     completed = originalCompleted
                 )
 
+            // Confirm that the student is authenticated before saving.
             val user =
                 FirebaseAuth.getInstance().currentUser
 
@@ -385,6 +415,7 @@ class EditTaskActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // Save the updated task to the student's Firestore collection.
             firestore
                 .collection("users")
                 .document(user.uid)
@@ -421,6 +452,7 @@ class EditTaskActivity : AppCompatActivity() {
                 }
                 .addOnFailureListener { exception ->
 
+                    // Restore the save button if the update fails.
                     btnSaveTask.isEnabled = true
                     btnSaveTask.text = "Save Changes"
 
@@ -433,11 +465,13 @@ class EditTaskActivity : AppCompatActivity() {
         }
     }
 
+    // Loads the selected task from Firestore for editing.
     private fun loadTask() {
 
         val user =
             FirebaseAuth.getInstance().currentUser
 
+        // Ensure the student is signed in.
         if (user == null) {
             Toast.makeText(
                 this,
@@ -457,6 +491,7 @@ class EditTaskActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { document ->
 
+                // Stop if the requested task no longer exists.
                 if (!document.exists()) {
 
                     Toast.makeText(
@@ -477,6 +512,7 @@ class EditTaskActivity : AppCompatActivity() {
                     return@addOnSuccessListener
                 }
 
+                // Populate the editing fields with the retrieved task.
                 fillTaskForm(task)
             }
             .addOnFailureListener {
@@ -491,9 +527,11 @@ class EditTaskActivity : AppCompatActivity() {
             }
     }
 
+    // Fills the editing form with existing task details and reminder settings.
     private fun fillTaskForm(task: Task) {
         originalCompleted = task.completed
 
+        // Store the original deadline for cancelling previous reminders.
         originalDeadline =
             task.deadline?.toDate()?.let { date ->
                 Calendar.getInstance().apply {
@@ -501,6 +539,7 @@ class EditTaskActivity : AppCompatActivity() {
                 }
             }
 
+        // Convert the saved reminder option into its interval in minutes.
         originalReminderMinutes = when (task.reminder) {
             getString(R.string.five_minutes_before) -> 5
             getString(R.string.fifteen_minutes_before) -> 15
@@ -510,6 +549,7 @@ class EditTaskActivity : AppCompatActivity() {
             else -> 0
         }
 
+        // Display the task's existing information.
         edtTaskTitle.setText(task.title)
         edtTaskCourse.setText(task.course)
         edtTaskDescription.setText(task.description)
@@ -517,6 +557,7 @@ class EditTaskActivity : AppCompatActivity() {
         edtTaskDate.text = task.date
         edtTaskTime.text = task.time
 
+        // Restore the task's previously selected date and time.
         selectedDate =
             task.deadline?.toDate()?.let { date ->
 
@@ -533,6 +574,7 @@ class EditTaskActivity : AppCompatActivity() {
                 }
             }
 
+        // Restore the saved importance, urgency, and reminder selections.
         setSpinnerValue(
             spinnerImportance,
             task.importance
@@ -549,6 +591,7 @@ class EditTaskActivity : AppCompatActivity() {
         )
     }
 
+    // Selects the matching saved value in a dropdown menu.
     private fun setSpinnerValue(
         spinner: Spinner,
         value: String
@@ -572,6 +615,7 @@ class EditTaskActivity : AppCompatActivity() {
         }
     }
 
+    // Opens the date picker and updates the task's selected date.
     private fun showDatePicker() {
 
         val calendar =
@@ -603,6 +647,7 @@ class EditTaskActivity : AppCompatActivity() {
             calendar.get(Calendar.DAY_OF_MONTH)
         )
 
+        // Apply the application's primary colour to the date picker buttons.
         datePicker.setOnShowListener {
 
             datePicker.getButton(
@@ -627,6 +672,7 @@ class EditTaskActivity : AppCompatActivity() {
         datePicker.show()
     }
 
+    // Opens the time picker and updates the task's selected time.
     private fun showTimePicker() {
 
         val calendar =
@@ -667,6 +713,7 @@ class EditTaskActivity : AppCompatActivity() {
             false
         )
 
+        // Apply the application's primary colour to the time picker buttons.
         timePicker.setOnShowListener {
 
             timePicker.getButton(

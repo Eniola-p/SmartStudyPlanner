@@ -28,4 +28,22 @@
         <item>@string/one_day_before</item>
     </string-array>
 
+    <!-- Preferred study time options -->
+    <string-array name="study_time_options">
+        <item>Morning</item>
+        <item>Afternoon</item>
+        <item>Evening</item>
+        <item>Night</item>
+        <item>Flexible</item>
+    </string-array>
+
+    <!-- Statistics -->
+    <string-array name="statistics_periods">
+        <item>This Week</item>
+        <item>Last Week</item>
+        <item>This Month</item>
+        <item>Last Month</item>
+    </string-array>
+
+
 </resources>

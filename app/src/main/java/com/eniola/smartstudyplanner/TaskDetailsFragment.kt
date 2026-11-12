@@ -1,3 +1,4 @@
+
 package com.eniola.smartstudyplanner
 
 import android.os.Bundle
@@ -12,8 +13,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import androidx.core.content.ContextCompat
 
+/** TaskDetailsFragment displays detailed information about a selected task.
+ * It retrieves task data from Firestore and allows students to edit or delete tasks while managing their associated reminders.*/
 class TaskDetailsFragment : Fragment() {
 
+    // Views used to display the selected task's information.
     private lateinit var txtDetailsTaskTitle: TextView
     private lateinit var txtDetailsTaskCourse: TextView
     private lateinit var txtDetailsTaskDate: TextView
@@ -22,14 +26,17 @@ class TaskDetailsFragment : Fragment() {
     private lateinit var txtDetailsTaskStatus: TextView
     private lateinit var txtDetailsTaskDescription: TextView
 
+    // Identifies the task whose details are being displayed.
     private var taskId: String = ""
 
+    /** Retrieves the selected task ID from the Fragment arguments. */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         taskId = arguments?.getString("taskId") ?: ""
     }
 
+    /** Initializes the task details screen and handles navigation and task actions. */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -42,6 +49,7 @@ class TaskDetailsFragment : Fragment() {
             false
         )
 
+        // Connect the task information views to their XML components.
         txtDetailsTaskTitle =
             view.findViewById(R.id.txtDetailsTaskTitle)
 
@@ -63,6 +71,7 @@ class TaskDetailsFragment : Fragment() {
         txtDetailsTaskDescription =
             view.findViewById(R.id.txtDetailsTaskDescription)
 
+        // Connect the back, edit, and delete action buttons.
         val imgBackTaskDetails =
             view.findViewById<ImageView>(
                 R.id.imgBackTaskDetails
@@ -102,11 +111,14 @@ class TaskDetailsFragment : Fragment() {
         imgDeleteTask.setOnClickListener {
             showDeleteConfirmation()
         }
+
+        // Retrieve and display the selected task.
         loadTask()
 
         return view
     }
 
+    /** Refreshes the task details when the student returns to this screen. */
     override fun onResume() {
         super.onResume()
 
@@ -115,8 +127,10 @@ class TaskDetailsFragment : Fragment() {
         }
     }
 
+    /** Retrieves the selected task from the authenticated student's Firestore records. */
     private fun loadTask() {
 
+        // Ensure a valid task ID was provided.
         if (taskId.isBlank()) {
             Toast.makeText(
                 requireContext(),
@@ -141,6 +155,7 @@ class TaskDetailsFragment : Fragment() {
             return
         }
 
+        // Find the task using the student's user ID and selected task ID.
         FirebaseFirestore.getInstance()
             .collection("users")
             .document(user.uid)
@@ -164,6 +179,7 @@ class TaskDetailsFragment : Fragment() {
                     return@addOnSuccessListener
                 }
 
+                // Convert the Firestore document into a Task object.
                 val task =
                     document.toObject(Task::class.java)
 
@@ -185,6 +201,7 @@ class TaskDetailsFragment : Fragment() {
             }
     }
 
+    /** Displays the task's title, course, deadline, priority, status, and description. */
     private fun displayTask(task: Task) {
 
         txtDetailsTaskTitle.text =

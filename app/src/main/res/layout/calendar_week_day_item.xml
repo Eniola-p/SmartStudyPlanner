@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardWeekDay"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="3dp"
+    app:cardBackgroundColor="@color/background"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/divider"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="10dp">
+
+        <!-- Day name -->
+        <TextView
+            android:id="@+id/txtWeekDayName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MON"
+            android:textColor="@color/secondary_text"
+            android:textSize="11sp"
+            android:fontFamily="@font/poppins_medium"/>
+
+        <!-- Day number -->
+        <TextView
+            android:id="@+id/txtWeekDayNumber"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:text="14"
+            android:textColor="@color/primary_text"
+            android:textSize="14sp"
+            android:fontFamily="@font/poppins_semibold"/>
+
+        <!-- Task indicator -->
+        <View
+            android:id="@+id/viewWeekTaskIndicator"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/bg_calendar_indicator"/>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

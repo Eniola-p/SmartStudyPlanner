@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_general">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_large">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/txtProgressSummaryTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Progress Summary"
+            android:textColor="@color/primary_text"
+            android:textSize="@dimen/text_heading"
+            android:fontFamily="@font/poppins_semibold"/>
+
+        <!-- Week -->
+        <TextView
+            android:id="@+id/txtProgressSummaryWeek"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:text="This Week"
+            android:textColor="@color/secondary_text"
+            android:textSize="@dimen/text_small"
+            android:fontFamily="@font/poppins_regular"/>
+
+        <!-- Completion Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_large"
+            style="@style/Widget.SmartStudyPlanner.DashboardCard">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/padding_large">
+
+                <TextView
+                    android:id="@+id/txtSummaryProgressPercent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0%"
+                    android:textColor="@color/primary_dark"
+                    android:textSize="28sp"
+                    android:fontFamily="@font/poppins_semibold"/>
+
+                <TextView
+                    android:id="@+id/txtSummaryCompletion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:text="0 of 0 tasks completed"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="@dimen/text_small"
+                    android:fontFamily="@font/poppins_regular"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Task Breakdown -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_large"
+            android:text="Task Breakdown"
+            android:textColor="@color/primary_text"
+            android:textSize="@dimen/text_body"
+            android:fontFamily="@font/poppins_semibold"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            style="@style/Widget.SmartStudyPlanner.DashboardCard">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/padding_large">
+
+                <!-- Total -->
+                <TextView
+                    android:id="@+id/txtSummaryTotal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Total Tasks: 0"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="@dimen/text_body"
+                    android:fontFamily="@font/poppins_regular"/>
+
+                <!-- Completed -->
+                <TextView
+                    android:id="@+id/txtSummaryCompleted"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:text="Completed: 0"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="@dimen/text_body"
+                    android:fontFamily="@font/poppins_regular"/>
+
+                <!-- Pending -->
+                <TextView
+                    android:id="@+id/txtSummaryPending"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:text="Pending: 0"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="@dimen/text_body"
+                    android:fontFamily="@font/poppins_regular"/>
+
+                <!-- Missed -->
+                <TextView
+                    android:id="@+id/txtSummaryMissed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:text="Missed: 0"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="@dimen/text_body"
+                    android:fontFamily="@font/poppins_regular"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+</ScrollView>

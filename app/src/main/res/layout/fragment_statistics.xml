@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_general">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_large">
+
+        <!-- Screen Title -->
+        <TextView
+            android:id="@+id/txtStatisticsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Study Statistics"
+            android:textColor="@color/primary_text"
+            android:textSize="@dimen/text_heading"
+            android:fontFamily="@font/poppins_semibold"/>
+
+        <!-- Period Selection -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_large"
+            android:text="View Period"
+            android:textColor="@color/primary_text"
+            android:textSize="@dimen/text_body"
+            android:fontFamily="@font/poppins_semibold"/>
+
+        <Spinner
+            android:id="@+id/spinnerStatisticsPeriod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"/>
+
+        <!-- Progress Trend -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_large"
+            android:text="Progress Trend"
+            android:textColor="@color/primary_text"
+            android:textSize="@dimen/text_body"
+            android:fontFamily="@font/poppins_semibold"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="280dp"
+            android:layout_marginTop="@dimen/margin_medium"
+            style="@style/Widget.SmartStudyPlanner.DashboardCard">
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/chartProgressTrend"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/padding_medium"/>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Completion Percentage -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_large"
+            style="@style/Widget.SmartStudyPlanner.DashboardCard">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/padding_large">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Completion Rate"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="@dimen/text_small"
+                    android:fontFamily="@font/poppins_regular"/>
+
+                <TextView
+                    android:id="@+id/txtStatisticsPercent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:text="0%"
+                    android:textColor="@color/primary_dark"
+                    android:textSize="28sp"
+                    android:fontFamily="@font/poppins_semibold"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Task Statistics -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_large"
+            android:text="Task Statistics"
+            android:textColor="@color/primary_text"
+            android:textSize="@dimen/text_body"
+            android:fontFamily="@font/poppins_semibold"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_medium"
+            style="@style/Widget.SmartStudyPlanner.DashboardCard">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/padding_large">
+
+                <TextView
+                    android:id="@+id/txtStatisticsTotal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Total Tasks: 0"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="@dimen/text_body"
+                    android:fontFamily="@font/poppins_regular"/>
+
+                <TextView
+                    android:id="@+id/txtStatisticsCompleted"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:text="Completed: 0"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="@dimen/text_body"
+                    android:fontFamily="@font/poppins_regular"/>
+
+                <TextView
+                    android:id="@+id/txtStatisticsPending"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:text="Pending: 0"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="@dimen/text_body"
+                    android:fontFamily="@font/poppins_regular"/>
+
+                <TextView
+                    android:id="@+id/txtStatisticsMissed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_medium"
+                    android:text="Missed: 0"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="@dimen/text_body"
+                    android:fontFamily="@font/poppins_regular"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+
+
+    </LinearLayout>
+
+</ScrollView>

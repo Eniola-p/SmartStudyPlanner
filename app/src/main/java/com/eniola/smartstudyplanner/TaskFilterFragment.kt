@@ -1,3 +1,4 @@
+
 package com.eniola.smartstudyplanner
 
 import android.os.Bundle
@@ -14,8 +15,11 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+/** TaskFilterFragment allows students to filter their academic tasks.
+ * It provides course, priority, and status filters, loads availablecourses from Firestore, and passes selections to the results screen.*/
 class TaskFilterFragment : Fragment() {
 
+    /** Inflates the task filtering interface. */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -29,6 +33,7 @@ class TaskFilterFragment : Fragment() {
         )
     }
 
+    /** Initializes the filter dropdowns and handles reset and apply actions. */
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?
@@ -38,6 +43,7 @@ class TaskFilterFragment : Fragment() {
             savedInstanceState
         )
 
+        // Connect the filter dropdowns and action buttons.
         val dropdownCourse =
             view.findViewById<MaterialAutoCompleteTextView>(
                 R.id.dropdownFilterCourse
@@ -120,6 +126,8 @@ class TaskFilterFragment : Fragment() {
 
         // Apply selected filters.
         btnApply.setOnClickListener {
+
+            // Ensure all filter fields contain a selected option.
             if (
                 dropdownCourse.text.isNullOrBlank() ||
                 dropdownPriority.text.isNullOrBlank() ||
@@ -135,8 +143,8 @@ class TaskFilterFragment : Fragment() {
                 return@setOnClickListener
             }
 
+            // Package the selected filter values for the results screen.
             val bundle = Bundle().apply {
-
                 putString(
                     "course",
                     dropdownCourse.text.toString()
@@ -169,6 +177,7 @@ class TaskFilterFragment : Fragment() {
         }
     }
 
+    /** Retrieves unique course names from the student's saved Firestore tasks. */
     private fun loadCourses(
         dropdownCourse: MaterialAutoCompleteTextView
     ) {
@@ -191,6 +200,7 @@ class TaskFilterFragment : Fragment() {
                 val courses =
                     mutableListOf("All")
 
+                // Collect course names without adding duplicates or empty values.
                 documents.forEach { document ->
 
                     val task =
@@ -232,13 +242,16 @@ class TaskFilterFragment : Fragment() {
         R.layout.item_filter_dropdown
     ), Filterable {
 
+        // Stores the complete list of dropdown options.
         private val allItems =
             items.toList()
 
+        /** Returns a custom filter that retains every dropdown option. */
         override fun getFilter(): Filter {
 
             return object : Filter() {
 
+                /** Returns all options regardless of the entered search text. */
                 override fun performFiltering(
                     constraint: CharSequence?
                 ): FilterResults {
@@ -249,6 +262,7 @@ class TaskFilterFragment : Fragment() {
                     }
                 }
 
+                /** Refreshes the dropdown after the filtering operation. */
                 override fun publishResults(
                     constraint: CharSequence?,
                     results: FilterResults?

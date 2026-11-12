@@ -28,6 +28,16 @@
     <color name="error">#D32F2F</color>
 
     <color name="success">#4CAF50</color>
+    <color name="calendar_selected">#E3F2FD</color>
+    <color name="bottom_nav_active">#1E88E5</color>
+
+    <!-- Light blue profile card background -->
+    <color name="profile_card_background">#F4F8FF</color>
+
+    <!-- Notification switch colors -->
+    <color name="switch_on">#1E88E5</color>
+    <color name="switch_off">#BDBDBD</color>
+    <color name="switch_off_track">#E0E0E0</color>
 
 
 </resources>

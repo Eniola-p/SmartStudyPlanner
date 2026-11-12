@@ -1,3 +1,4 @@
+
 package com.eniola.smartstudyplanner
 
 import android.os.Bundle
@@ -5,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import android.widget.TextView
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -15,12 +17,17 @@ import androidx.core.content.ContextCompat
 import com.google.firebase.firestore.FirebaseFirestore
 import android.widget.ImageView
 import com.eniola.smartstudyplanner.utils.TaskPriorityUtils
+import java.io.File
+import com.bumptech.glide.Glide
 
-
+/**HomeFragment displays the student's main dashboard.
+ It shows personalized greetings, today's tasks, upcoming deadlines,task priorities, and weekly study progress using shared task data.*/
 class HomeFragment : Fragment() {
 
+    // Shares the user's task data with the other fragments.
+    private lateinit var taskViewModel: TaskViewModel
 
-
+    //Initializes the Home dashboard, navigation, and task data observer.
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -33,10 +40,14 @@ class HomeFragment : Fragment() {
             false
         )
 
+        // Gets the ViewModel shared with the Activity.
+        taskViewModel =
+            ViewModelProvider(requireActivity())[TaskViewModel::class.java]
+
         val txtCurrentDate =
             view.findViewById<TextView>(R.id.txtCurrentDate)
 
-        //Take the user to your Tasks screen
+        // Take the user to the Tasks screen.
         val txtViewAllTasks =
             view.findViewById<TextView>(R.id.txtViewAllTasks)
 
@@ -47,12 +58,29 @@ class HomeFragment : Fragment() {
                 .commit()
         }
 
+        // Opens the upcoming deadlines section of the Tasks screen.
         val txtViewAllDeadlines =
             view.findViewById<TextView>(R.id.txtViewAllDeadlines)
 
         txtViewAllDeadlines.setOnClickListener {
+
+            val fragment =
+                TasksFragment().apply {
+
+                    arguments =
+                        Bundle().apply {
+                            putBoolean(
+                                "openUpcoming",
+                                true
+                            )
+                        }
+                }
+
             parentFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, TasksFragment())
+                .replace(
+                    R.id.fragmentContainer,
+                    fragment
+                )
                 .addToBackStack(null)
                 .commit()
         }
@@ -71,20 +99,100 @@ class HomeFragment : Fragment() {
             dateFormat.format(calendar.time)
 
         loadUserGreeting(view)
+        loadHomeProfilePicture(view)
+
+        // Connect the Home profile picture.
+        val imgHomeProfile =
+            view.findViewById<ImageView>(
+                R.id.imgHomeProfile
+            )
+
+        // Open the Profile screen when tapped.
+        imgHomeProfile.setOnClickListener {
+
+            parentFragmentManager.beginTransaction()
+                .replace(
+                    R.id.fragmentContainer,
+                    ProfileFragment()
+                )
+                .addToBackStack(null)
+                .commit()
+        }
+
+        // Opens the detailed study progress summary.
+        val txtProgressSummary =
+            view.findViewById<TextView>(
+                R.id.txtProgressSummary
+            )
+
+        txtProgressSummary.setOnClickListener {
+
+            val fragment =
+                ProgressSummaryFragment()
+
+            parentFragmentManager.beginTransaction()
+                .replace(
+                    R.id.fragmentContainer,
+                    fragment
+                )
+                .addToBackStack(null)
+                .commit()
+        }
+
+        // Opens the student's study statistics screen.
+        val txtViewStatistics =
+            view.findViewById<TextView>(
+                R.id.txtViewStatistics
+            )
+
+        txtViewStatistics.setOnClickListener {
+
+            val fragment =
+                StatisticsFragment()
+
+            parentFragmentManager.beginTransaction()
+                .replace(
+                    R.id.fragmentContainer,
+                    fragment
+                )
+                .addToBackStack(null)
+                .commit()
+        }
+
+        // Observe the shared task data from the ViewModel.
+        taskViewModel.tasks.observe(viewLifecycleOwner) { tasks ->
+
+            if (!isAdded || view != this.view) {
+                return@observe
+            }
+
+            // Update the Home sections using the shared task list.
+            updateTodayTasks(view, tasks)
+            updateUpcomingDeadlines(view, tasks)
+            updateStudyProgress(view, tasks)
+        }
+
+        // Load tasks through the shared ViewModel.
+        taskViewModel.loadTasks()
 
         return view
     }
 
+    // Refreshes the profile picture whenever the student returns to Home.
     override fun onResume() {
         super.onResume()
+
         val currentView = view ?: return
+
         if (!isAdded) {
             return
         }
-        loadTodayTasks(currentView)
-        loadUpcomingDeadlines(currentView)
+
+        // Refresh the profile picture when returning to Home.
+        loadHomeProfilePicture(currentView)
     }
 
+    // Displays a personalized greeting based on the student's name and time of day.
     private fun loadUserGreeting(view: View) {
 
         val txtGreeting =
@@ -94,52 +202,68 @@ class HomeFragment : Fragment() {
             FirebaseAuth.getInstance().currentUser
 
         if (user == null) {
-            txtGreeting.text = "NO USER"
+            txtGreeting.text = "Welcome!"
             return
         }
 
-        FirebaseFirestore.getInstance()
-            .collection("users")
-            .document(user.uid)
-            .get()
-            .addOnSuccessListener { document ->
+        // Gets the name already available from the signed-in user.
+        val userName =
+            user.displayName?.takeIf { it.isNotBlank() }
+                ?: "Student"
 
-                if (!document.exists()) {
-                    txtGreeting.text = "USER DOCUMENT NOT FOUND"
-                    return@addOnSuccessListener
-                }
+        // Gets the current hour for the greeting.
+        val hour =
+            Calendar.getInstance()
+                .get(Calendar.HOUR_OF_DAY)
 
-                val userName =
-                    document.getString("fullName")
-                        ?: "NO FULL NAME"
+        val greeting = when (hour) {
+            in 6..11 -> "Good Morning"
+            in 12..16 -> "Good Afternoon"
+            in 17..22 -> "Good Evening"
+            else -> "Good Night"
+        }
 
-                val hour =
-                    Calendar.getInstance()
-                        .get(Calendar.HOUR_OF_DAY)
-
-                val greeting = when (hour) {
-                    in 6..11 -> "Good Morning"
-                    in 12..16 -> "Good Afternoon"
-                    in 17..22 -> "Good Evening"
-                    else -> "Good Night"
-                }
-
-                txtGreeting.text =
-                    "$greeting, $userName!"
-            }
-            .addOnFailureListener { exception ->
-
-                txtGreeting.text =
-                    "ERROR: ${exception.message}"
-            }
+        txtGreeting.text =
+            "$greeting, $userName!"
     }
-    private fun loadTodayTasks(view: View) {
 
-        val user = FirebaseAuth.getInstance().currentUser
+    // Loads the saved local profile picture or displays the default profile icon.
+    private fun loadHomeProfilePicture(view: View) {
 
-        if (user == null) {
-            return
+        val imgHomeProfile =
+            view.findViewById<ImageView>(
+                R.id.imgHomeProfile
+            )
+
+        val file =
+            File(
+                requireContext().filesDir,
+                "profile_picture.jpg"
+            )
+
+        if (file.exists()) {
+
+            Glide.with(this)
+                .load(file)
+                .skipMemoryCache(true)
+                .diskCacheStrategy(
+                    com.bumptech.glide.load.engine.DiskCacheStrategy.NONE
+                )
+                .into(imgHomeProfile)
+
+        } else {
+
+            imgHomeProfile.setImageResource(
+                R.drawable.ic_profile
+            )
         }
+    }
+
+    // Filters today's tasks and displays completion, missed-task, and remaining-task information.
+    private fun updateTodayTasks(
+        view: View,
+        tasks: List<Task>
+    ) {
 
         val layoutTodayTasks =
             view.findViewById<LinearLayout>(
@@ -150,9 +274,6 @@ class HomeFragment : Fragment() {
             view.findViewById<TextView>(
                 R.id.txtTodayTasksMessage
             )
-
-        val firestore =
-            FirebaseFirestore.getInstance()
 
         // Start of today.
         val startOfToday = Calendar.getInstance().apply {
@@ -171,151 +292,129 @@ class HomeFragment : Fragment() {
             set(Calendar.MILLISECOND, 0)
         }
 
-        firestore
-            .collection("users")
-            .document(user.uid)
-            .collection("tasks")
-            .whereGreaterThanOrEqualTo(
-                "deadline",
-                com.google.firebase.Timestamp(
-                    startOfToday.time
-                )
-            )
-            .whereLessThan(
-                "deadline",
-                com.google.firebase.Timestamp(
-                    startOfTomorrow.time
-                )
-            )
-            .orderBy("deadline")
-            .get()
-            .addOnSuccessListener { documents ->
-                if (!isAdded) {
-                    return@addOnSuccessListener
-                }
-                layoutTodayTasks.removeAllViews()
+        // Keep only today's tasks.
+        val allTodayTasks =
+            tasks.filter { task ->
 
-                // Convert all today's documents into Task objects.
-                val allTodayTasks =
-                    documents.map {
-                        it.toObject(Task::class.java)
-                    }
+                val deadline =
+                    task.deadline?.toDate()?.time
+                        ?: return@filter false
 
-                val totalCount =
-                    allTodayTasks.size
-
-                // Find completed tasks.
-                val completedCount =
-                    allTodayTasks.count {
-                        it.completed
-                    }
-
-                // Find missed tasks that are still incomplete.
-                val missedCount =
-                    allTodayTasks.count { task ->
-
-                        val deadlineTime =
-                            task.deadline?.toDate()?.time
-                                ?: 0L
-
-                        !task.completed &&
-                                deadlineTime < System.currentTimeMillis()
-                    }
-
-                // If there are no tasks at all today.
-                if (totalCount == 0) {
-
-                    txtTodayTasksMessage.text =
-                        getString(
-                            R.string.no_study_tasks_today
-                        )
-
-                    return@addOnSuccessListener
-                }
-
-                // If every task for today is completed,
-                // show only the congratulatory message.
-                if (completedCount == totalCount) {
-
-                    txtTodayTasksMessage.text =
-                        getString(
-                            R.string.all_tasks_completed_today
-                        )
-
-                    return@addOnSuccessListener
-                }
-
-                // Keep only uncompleted tasks for display.
-                val incompleteTasks =
-                    allTodayTasks
-                        .filter {
-                            !it.completed
-                        }
-
-                // Sort incomplete tasks by priority first,
-                // then by deadline.
-                val sortedTasks =
-                    incompleteTasks.sortedWith(
-                        compareBy<Task> {
-
-                            when (it.priority) {
-                                "High" -> 1
-                                "Medium" -> 2
-                                "Normal" -> 3
-                                "Low" -> 4
-                                else -> 5
-                            }
-                        }.thenBy {
-
-                            it.deadline?.toDate()?.time
-                                ?: Long.MAX_VALUE
-                        }
-                    )
-                // Display a maximum of three
-                // uncompleted tasks.
-                sortedTasks
-                    .take(3)
-                    .forEach { task ->
-                        addTodayTask(
-                            layoutTodayTasks,
-                            task
-                        )
-                    }
-                // Display the appropriate message.
-                val remainingCount =
-                    incompleteTasks.size
-                txtTodayTasksMessage.text =
-                    when {
-                        missedCount > 0 ->
-                            getString(
-                                R.string.missed_tasks_today,
-                                missedCount
-                            )
-                        completedCount > 0 ->
-                            getString(
-                                R.string.tasks_completed_today,
-                                completedCount,
-                                totalCount
-                            )
-                        else ->
-                            getString(
-                                R.string.tasks_remaining_today,
-                                remainingCount
-                            )
-                    }
+                deadline >= startOfToday.timeInMillis &&
+                        deadline < startOfTomorrow.timeInMillis
             }
-            .addOnFailureListener {
-                if (!isAdded) {
-                    return@addOnFailureListener
-                }
-                layoutTodayTasks.removeAllViews()
 
-                txtTodayTasksMessage.text =
+        layoutTodayTasks.removeAllViews()
+
+        val totalCount =
+            allTodayTasks.size
+
+        // Find completed tasks.
+        val completedCount =
+            allTodayTasks.count {
+                it.completed
+            }
+
+        // Find missed tasks that are still incomplete.
+        val missedCount =
+            allTodayTasks.count { task ->
+
+                val deadlineTime =
+                    task.deadline?.toDate()?.time
+                        ?: 0L
+
+                !task.completed &&
+                        deadlineTime < System.currentTimeMillis()
+            }
+
+        // If there are no tasks at all today.
+        if (totalCount == 0) {
+
+            txtTodayTasksMessage.text =
+                getString(
+                    R.string.no_study_tasks_today
+                )
+
+            return
+        }
+
+        // If every task for today is completed, show only the congratulatory message.
+        if (completedCount == totalCount) {
+
+            txtTodayTasksMessage.text =
+                getString(
+                    R.string.all_tasks_completed_today
+                )
+
+            return
+        }
+
+        // Keep only uncompleted tasks for display.
+        val incompleteTasks =
+            allTodayTasks.filter {
+                !it.completed
+            }
+
+        // Sort incomplete tasks by priority first, then by deadline.
+        val sortedTasks =
+            incompleteTasks.sortedWith(
+                compareBy<Task> {
+
+                    when (it.priority) {
+                        "High" -> 1
+                        "Medium" -> 2
+                        "Normal" -> 3
+                        "Low" -> 4
+                        else -> 5
+                    }
+
+                }.thenBy {
+
+                    it.deadline?.toDate()?.time
+                        ?: Long.MAX_VALUE
+                }
+            )
+
+        // Display a maximum of three uncompleted tasks.
+        sortedTasks
+            .take(3)
+            .forEach { task ->
+
+                addTodayTask(
+                    layoutTodayTasks,
+                    task
+                )
+            }
+
+        // Display the appropriate message.
+        val remainingCount =
+            incompleteTasks.size
+
+        txtTodayTasksMessage.text =
+            when {
+
+                missedCount > 0 ->
                     getString(
-                        R.string.unable_to_load_today_tasks
+                        R.string.missed_tasks_today,
+                        missedCount
+                    )
+
+                completedCount > 0 ->
+                    getString(
+                        R.string.tasks_completed_today,
+                        completedCount,
+                        totalCount
+                    )
+
+                else ->
+                    getString(
+                        R.string.tasks_remaining_today,
+                        remainingCount
                     )
             }
     }
+
+    // Creates and displays a task row with its details, priority, and completion checkbox.
     private fun addTodayTask(
         container: LinearLayout,
         task: Task
@@ -328,18 +427,22 @@ class HomeFragment : Fragment() {
                     container,
                     false
                 )
+
         val checkTaskCompleted =
             itemView.findViewById<android.widget.CheckBox>(
                 R.id.checkTaskCompleted
             )
+
         val txtTodayTaskTitle =
             itemView.findViewById<TextView>(
                 R.id.txtTodayTaskTitle
             )
+
         val txtTodayTaskDetails =
             itemView.findViewById<TextView>(
                 R.id.txtTodayTaskDetails
             )
+
         val txtTodayTaskPriority =
             itemView.findViewById<TextView>(
                 R.id.txtTodayTaskPriority
@@ -349,6 +452,7 @@ class HomeFragment : Fragment() {
             itemView.findViewById<ImageView>(
                 R.id.imgTodayTaskPriority
             )
+
         // Display the task information.
         txtTodayTaskTitle.text = task.title
 
@@ -380,19 +484,24 @@ class HomeFragment : Fragment() {
                 priority.colorRes
             )
         )
+
         // Show the current completion state.
-        checkTaskCompleted.isChecked = task.completed
+        checkTaskCompleted.isChecked =
+            task.completed
 
         // Update Firestore when the checkbox is changed.
         checkTaskCompleted.setOnCheckedChangeListener { _, isChecked ->
+
             updateTaskCompletion(
                 taskId = task.id,
                 completed = isChecked
             )
         }
+
         container.addView(itemView)
     }
 
+    // Updates a task's completion status in Firestore and refreshes the shared task list.
     private fun updateTaskCompletion(
         taskId: String,
         completed: Boolean
@@ -404,6 +513,7 @@ class HomeFragment : Fragment() {
         if (user == null) {
             return
         }
+
         FirebaseFirestore.getInstance()
             .collection("users")
             .document(user.uid)
@@ -411,171 +521,115 @@ class HomeFragment : Fragment() {
             .document(taskId)
             .update("completed", completed)
             .addOnSuccessListener {
-                // Reload today's tasks so the dashboard immediately reflects the new completion state.
-                view?.let {
-                    loadTodayTasks(it)
-                }
+
+                // Refresh the shared task data after the update.
+                taskViewModel.loadTasks()
             }
             .addOnFailureListener {
-                // If Firestore fails, refresh the dashboard so the checkbox returns to its saved state.
-                view?.let {
-                    loadTodayTasks(it)
-                }
+
+                // Refresh the shared task data if the update fails.
+                taskViewModel.loadTasks()
             }
     }
-    private fun loadUpcomingDeadlines(view: View) {
 
-        val user = FirebaseAuth.getInstance().currentUser
-
-        if (user == null) {
-            return
-        }
+    /** Displays up to three upcoming incomplete tasks sorted by deadline and priority. */
+    private fun updateUpcomingDeadlines(
+        view: View,
+        tasks: List<Task>
+    ) {
 
         val layoutUpcomingTasks =
             view.findViewById<LinearLayout>(
                 R.id.layoutUpcomingTasks
             )
 
-        val firestore =
-            FirebaseFirestore.getInstance()
+        val startOfTomorrow = Calendar.getInstance().apply {
+            add(Calendar.DAY_OF_MONTH, 1)
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
 
-        // Start of tomorrow.
-        val startOfTomorrow =
-            Calendar.getInstance().apply {
-                add(Calendar.DAY_OF_MONTH, 1)
-                set(Calendar.HOUR_OF_DAY, 0)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-                set(Calendar.MILLISECOND, 0)
-            }
+        // Keep only incomplete tasks from tomorrow onward.
+        val sortedTasks =
+            tasks
+                .filter { task ->
 
-        firestore
-            .collection("users")
-            .document(user.uid)
-            .collection("tasks")
-            .whereGreaterThanOrEqualTo(
-                "deadline",
-                com.google.firebase.Timestamp(
-                    startOfTomorrow.time
+                    val deadline =
+                        task.deadline?.toDate()?.time
+                            ?: return@filter false
+
+                    !task.completed &&
+                            deadline >= startOfTomorrow.timeInMillis
+                }
+                .sortedWith(
+                    compareBy<Task> {
+
+                        it.deadline?.toDate()?.time
+                            ?: Long.MAX_VALUE
+
+                    }.thenBy {
+
+                        when (it.priority) {
+                            "High" -> 1
+                            "Medium" -> 2
+                            "Normal" -> 3
+                            "Low" -> 4
+                            else -> 5
+                        }
+                    }
                 )
-            )
-            .whereEqualTo(
-                "completed",
-                false
-            )
-            .get()
-            .addOnSuccessListener { documents ->
-                val context = context ?: return@addOnSuccessListener
-                if (!isAdded || view == null) {
-                    return@addOnSuccessListener
-                }
 
-                layoutUpcomingTasks.removeAllViews()
+        layoutUpcomingTasks.removeAllViews()
 
-                if (documents.isEmpty) {
+        if (sortedTasks.isEmpty()) {
 
-                    val emptyMessage =
-                        TextView(context) .apply {
-                            text = getString(
-                                R.string.no_upcoming_deadlines
-                            )
+            val emptyMessage =
+                TextView(requireContext()).apply {
 
-                            setTextColor(
-                                ContextCompat.getColor(
-                                    context,
-                                    R.color.secondary_text
-                                )
-                            )
-                            textSize = 14f
-                        }
+                    text =
+                        getString(
+                            R.string.no_upcoming_deadlines
+                        )
 
-                    layoutUpcomingTasks.addView(
-                        emptyMessage
+                    setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.secondary_text
+                        )
                     )
 
-                    return@addOnSuccessListener
+                    textSize = 14f
                 }
 
-                // Sort by priority first,
-                // then by earliest deadline.
-                val sortedTasks =
-                    documents
-                        .map {
-                            it.toObject(Task::class.java)
-                        }
-                        .sortedWith(
-                            compareBy<Task> {
+            layoutUpcomingTasks.addView(
+                emptyMessage
+            )
 
-                                when (it.priority) {
-                                    "High" -> 1
-                                    "Medium" -> 2
-                                    "Normal" -> 3
-                                    "Low" -> 4
-                                    else -> 5
-                                }
+            return
+        }
 
-                            }.thenBy {
+        // Display a maximum of three upcoming deadlines.
+        sortedTasks
+            .take(3)
+            .forEach { task ->
 
-                                it.deadline
-                                    ?.toDate()
-                                    ?.time
-                                    ?: Long.MAX_VALUE
-                            }
-                        )
-
-                // Show only the top three upcoming deadlines.
-                sortedTasks
-                    .take(3)
-                    .forEach { task ->
-
-                        addUpcomingDeadline(
-                            layoutUpcomingTasks,
-                            task
-                        )
-                    }
-            }
-            .addOnFailureListener {
-                val context = context ?: return@addOnFailureListener
-                if (!isAdded || view == null) {
-                    return@addOnFailureListener
-                }
-
-                val currentView = view ?: return@addOnFailureListener
-
-                val currentLayout =
-                    currentView.findViewById<LinearLayout>(
-                        R.id.layoutUpcomingTasks
-                    )
-
-                currentLayout.removeAllViews()
-
-                val errorMessage =
-                    TextView(context).apply {
-                        text =
-                            getString(
-                                R.string.failed_to_load_deadlines
-                            )
-
-                        setTextColor(
-                            ContextCompat.getColor(
-                                currentView.context,
-                                R.color.secondary_text
-                            )
-                        )
-
-                        textSize = 14f
-                    }
-
-                currentLayout.addView(
-                    errorMessage
+                addUpcomingDeadline(
+                    layoutUpcomingTasks,
+                    task
                 )
             }
     }
+
+    /** Creates a deadline row showing the task's title, course, date, time, and priority. */
     private fun addUpcomingDeadline(
         container: LinearLayout,
         task: Task
     ) {
+
         val context = context ?: return
+
         val itemView =
             LayoutInflater.from(context)
                 .inflate(
@@ -583,6 +637,7 @@ class HomeFragment : Fragment() {
                     container,
                     false
                 )
+
         val txtTitle =
             itemView.findViewById<TextView>(
                 R.id.txtDeadlineTaskTitle
@@ -653,4 +708,155 @@ class HomeFragment : Fragment() {
 
         container.addView(itemView)
     }
+
+    /** Calculates and displays weekly task completion progress and study statistics. */
+    private fun updateStudyProgress(
+        view: View,
+        tasks: List<Task>
+    ) {
+
+        val txtWeeklyGoal =
+            view.findViewById<TextView>(
+                R.id.txtWeeklyGoal
+            )
+
+        val txtProgressPercent =
+            view.findViewById<TextView>(
+                R.id.txtProgressPercent
+            )
+
+        val progressStudy =
+            view.findViewById<android.widget.ProgressBar>(
+                R.id.progressStudy
+            )
+
+        val txtProgressSummary =
+            view.findViewById<TextView>(
+                R.id.txtProgressSummary
+            )
+
+        val calendar =
+            Calendar.getInstance()
+
+        // Set the current week's starting date to Monday.
+        calendar.set(
+            Calendar.DAY_OF_WEEK,
+            Calendar.MONDAY
+        )
+
+        calendar.set(
+            Calendar.HOUR_OF_DAY,
+            0
+        )
+
+        calendar.set(
+            Calendar.MINUTE,
+            0
+        )
+
+        calendar.set(
+            Calendar.SECOND,
+            0
+        )
+
+        calendar.set(
+            Calendar.MILLISECOND,
+            0
+        )
+
+        val startOfWeek =
+            calendar.timeInMillis
+
+        calendar.add(
+            Calendar.DAY_OF_MONTH,
+            7
+        )
+
+        val startOfNextWeek =
+            calendar.timeInMillis
+
+        // Keep tasks planned for the current week.
+        val weeklyTasks =
+            tasks.filter { task ->
+
+                val deadline =
+                    task.deadline?.toDate()?.time
+                        ?: return@filter false
+
+                deadline >= startOfWeek &&
+                        deadline < startOfNextWeek
+            }
+
+        val totalTasks =
+            weeklyTasks.size
+
+        if (totalTasks == 0) {
+
+            txtWeeklyGoal.text =
+                getString(
+                    R.string.no_tasks_planned_this_week
+                )
+
+            txtProgressPercent.text =
+                "0%"
+
+            progressStudy.progress =
+                0
+
+            txtProgressSummary.text =
+                getString(
+                    R.string.progress_summary
+                )
+
+            return
+        }
+
+        // Count completed, missed, and pending tasks for the week.
+        val completedTasks =
+            weeklyTasks.count {
+                it.completed
+            }
+
+        val missedTasks =
+            weeklyTasks.count { task ->
+
+                !task.completed &&
+                        task.deadline
+                            ?.toDate()
+                            ?.time
+                            ?.let {
+                                it < System.currentTimeMillis()
+                            } == true
+            }
+
+        val pendingTasks =
+            totalTasks -
+                    completedTasks -
+                    missedTasks
+
+        // Calculate the percentage of weekly tasks completed.
+        val progress =
+            (completedTasks * 100) /
+                    totalTasks
+
+        txtWeeklyGoal.text =
+            getString(
+                R.string.weekly_goal_tasks,
+                totalTasks
+            )
+
+        txtProgressPercent.text =
+            "$progress%"
+
+        progressStudy.progress =
+            progress
+
+        txtProgressSummary.text =
+            getString(
+                R.string.progress_summary_tasks,
+                completedTasks,
+                pendingTasks,
+                missedTasks
+            )
     }
+}

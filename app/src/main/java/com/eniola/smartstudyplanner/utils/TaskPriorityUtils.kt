@@ -1,16 +1,20 @@
+
 package com.eniola.smartstudyplanner.utils
 
 import com.eniola.smartstudyplanner.enums.Priority
 
+/** TaskPriorityUtils determines the priority level of study tasks
+ * based on their importance and urgency, and converts priority
+ * names into their corresponding Priority enum values. */
 object TaskPriorityUtils {
 
+    // Calculates a task's priority using the selected importance and urgency levels.
     fun calculatePriority(
         importancePosition: Int,
         urgencyPosition: Int
     ): Priority {
 
-        // If either option has not been selected,
-        // the task has no priority yet.
+        // If either option has not been selected, the task has no priority yet.
         if (importancePosition == 0 || urgencyPosition == 0) {
             return Priority.NONE
         }
@@ -58,6 +62,7 @@ object TaskPriorityUtils {
         }
     }
 
+    // Converts a priority name into its corresponding Priority enum value.
     fun getPriorityFromName(name: String): Priority {
         return when (name) {
             "High" -> Priority.HIGH

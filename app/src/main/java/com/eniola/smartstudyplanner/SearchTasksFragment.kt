@@ -1,3 +1,4 @@
+
 package com.eniola.smartstudyplanner
 
 import android.content.Context
@@ -16,24 +17,32 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import android.widget.ImageView
 
+/** SearchTasksFragment allows students to search their saved study tasks.
+ * It retrieves tasks from Firestore, filters results by title, course, or description, and manages recent searches using SharedPreferences.*/
 class SearchTasksFragment : Fragment() {
 
+    // Search input, suggestions, and results interface components.
     private lateinit var edtSearchTasks: TextInputEditText
     private lateinit var layoutSearchSuggestions: LinearLayout
     private lateinit var layoutSearchResults: LinearLayout
     private lateinit var txtSearchSuggestionsTitle: TextView
     private lateinit var txtClearRecentSearches: TextView
     private lateinit var txtSearchResultsTitle: TextView
+
+    // Stores the student's tasks retrieved from Firestore.
     private val allTasks = mutableListOf<Task>()
 
+    // Stores previously submitted search queries.
     private val recentSearches = mutableListOf<String>()
 
+    // Identifiers used to store recent searches in SharedPreferences.
     private val preferencesName =
         "smart_study_search_preferences"
 
     private val recentSearchesKey =
         "recent_searches"
 
+    /** Initializes the task search screen and loads tasks and recent searches. */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -46,6 +55,7 @@ class SearchTasksFragment : Fragment() {
             false
         )
 
+        // Connect the search interface components to their XML views.
         edtSearchTasks =
             view.findViewById(R.id.edtSearchTasks)
 
@@ -64,7 +74,7 @@ class SearchTasksFragment : Fragment() {
         txtSearchResultsTitle =
             view.findViewById(R.id.txtSearchResultsTitle)
 
-
+        // Return to the previous screen when the back button is tapped.
         val imgBackSearch =
             view.findViewById<android.widget.ImageView>(
                 R.id.imgBackSearch
@@ -74,19 +84,16 @@ class SearchTasksFragment : Fragment() {
             parentFragmentManager.popBackStack()
         }
 
+        // Remove saved search history when the clear button is tapped.
         txtClearRecentSearches.setOnClickListener {
             clearRecentSearches()
         }
-
         loadRecentSearches()
-
         setupSearch()
-
         loadTasks()
 
         // Search field is immediately ready for typing.
         edtSearchTasks.requestFocus()
-
         edtSearchTasks.postDelayed({
 
             if (!isAdded) return@postDelayed
@@ -106,8 +113,10 @@ class SearchTasksFragment : Fragment() {
         return view
     }
 
+    /** Handles live task searching, recent search suggestions, and search submissions. */
     private fun setupSearch() {
 
+        // Display recent searches when the empty search field gains focus.
         edtSearchTasks.setOnFocusChangeListener { _, hasFocus ->
 
             if (hasFocus &&
@@ -117,6 +126,7 @@ class SearchTasksFragment : Fragment() {
             }
         }
 
+        // Filter tasks automatically whenever the search text changes.
         edtSearchTasks.doAfterTextChanged { text ->
 
             val query =
@@ -127,11 +137,11 @@ class SearchTasksFragment : Fragment() {
                 showRecentSearches()
 
             } else {
-
                 searchTasks(query)
             }
         }
 
+        // Save the search query when the Search or Enter key is pressed.
         edtSearchTasks.setOnEditorActionListener { _, actionId, event ->
 
             val isSearchAction =
@@ -153,9 +163,7 @@ class SearchTasksFragment : Fragment() {
                         ?: ""
 
                 if (query.isNotBlank()) {
-
                     saveRecentSearch(query)
-
                     searchTasks(query)
                 }
                 true
@@ -165,6 +173,7 @@ class SearchTasksFragment : Fragment() {
         }
     }
 
+    /** Retrieves the authenticated student's tasks from Firestore for searching. */
     private fun loadTasks() {
 
         val user =
@@ -188,8 +197,7 @@ class SearchTasksFragment : Fragment() {
                     }
                 )
 
-                // Do not show recent searches automatically
-                // if the user has not interacted with the field yet.
+                // Do not show recent searches automatically if the user has not interacted with the field yet.
                 if (edtSearchTasks.hasFocus() &&
                     edtSearchTasks.text.isNullOrBlank()
                 ) {
@@ -198,6 +206,7 @@ class SearchTasksFragment : Fragment() {
             }
     }
 
+    /** Filters tasks by title, course, or description and displays matching results. */
     private fun searchTasks(query: String) {
 
         val results =
@@ -245,6 +254,7 @@ class SearchTasksFragment : Fragment() {
         }
     }
 
+    /** Displays the student's saved recent search queries as suggestions. */
     private fun showRecentSearches() {
 
         layoutSearchResults.removeAllViews()
@@ -274,6 +284,7 @@ class SearchTasksFragment : Fragment() {
         }
     }
 
+    /** Creates a recent search row with options to reuse or delete the query. */
     private fun addRecentSearch(search: String) {
 
         val row =
@@ -294,6 +305,7 @@ class SearchTasksFragment : Fragment() {
                 R.id.imgDeleteRecentSearch
             )
 
+        // Remove the selected query from recent searches.
         imgDeleteRecentSearch.setOnClickListener {
             removeRecentSearch(search)
         }
@@ -310,10 +322,10 @@ class SearchTasksFragment : Fragment() {
             )
         }
 
-
         layoutSearchSuggestions.addView(row)
     }
 
+    /** Loads previously saved search queries from SharedPreferences. */
     private fun loadRecentSearches() {
 
         val preferences =
@@ -335,6 +347,7 @@ class SearchTasksFragment : Fragment() {
         }
     }
 
+    /** Saves a search query and keeps a maximum of five recent searches. */
     private fun saveRecentSearch(
         query: String
     ) {
@@ -346,6 +359,7 @@ class SearchTasksFragment : Fragment() {
             return
         }
 
+        // Remove duplicate queries before adding the latest search.
         recentSearches.removeAll {
             it.equals(
                 cleanQuery,
@@ -365,6 +379,7 @@ class SearchTasksFragment : Fragment() {
             )
         }
 
+        // Store the updated recent searches on the student's device.
         val preferences =
             requireContext().getSharedPreferences(
                 preferencesName,
@@ -379,6 +394,7 @@ class SearchTasksFragment : Fragment() {
             .apply()
     }
 
+    /** Deletes a selected recent search and refreshes the suggestions list. */
     private fun removeRecentSearch(
         search: String
     ) {
@@ -406,6 +422,7 @@ class SearchTasksFragment : Fragment() {
         showRecentSearches()
     }
 
+    /** Creates a search result row showing the task's title, course, and deadline. */
     private fun addSearchResult(
         task: Task
     ) {
@@ -451,6 +468,7 @@ class SearchTasksFragment : Fragment() {
         )
     }
 
+    /** Displays a message when no tasks match the entered search query. */
     private fun showNoResults(
         query: String
     ) {
@@ -474,6 +492,8 @@ class SearchTasksFragment : Fragment() {
             message
         )
     }
+
+    /** Clears all saved search history and updates the recent searches display. */
     private fun clearRecentSearches() {
         val preferences =
             requireContext().getSharedPreferences(
