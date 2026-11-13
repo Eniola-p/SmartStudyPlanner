@@ -20,6 +20,12 @@ import kotlin.math.abs
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import com.eniola.smartstudyplanner.database.AppDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import android.util.Log
+import com.eniola.smartstudyplanner.database.FirebaseTaskMigration
 
 /** MainActivity manages the application's main interface and navigation.
  * It handles bottom navigation, task creation, StudyMate AI access, notification setup, and internet connectivity checks.*/
@@ -40,6 +46,12 @@ class MainActivity : AppCompatActivity() {
     /** Initializes the main interface, navigation, notifications, and StudyMate controls. */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Import existing Firebase tasks into local SQLite storage.
+        FirebaseTaskMigration.migrateTasks(
+            context = this,
+            scope = lifecycleScope
+        )
 
         // Create the notification channel for study task reminders.
         NotificationHelper.createNotificationChannel(this)

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.googleServices)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -40,6 +41,12 @@ android {
 }
 
 dependencies {
+    // Room SQLite Database
+    val roomVersion = "2.8.5"
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
 
     // Firebase setup
     implementation(platform("com.google.firebase:firebase-bom:34.17.0"))
